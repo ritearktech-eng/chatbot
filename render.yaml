@@ -3,8 +3,8 @@ services:
   - type: web
     name: prime-chatbot-backend-node
     env: docker
-    dockerfilePath: ./backend-node/Dockerfile
-    dockerContext: ./backend-node
+    dockerfilePath: backend-node/Dockerfile
+    dockerContext: backend-node
     envVars:
       - key: DATABASE_URL
         sync: false # User must provide this
@@ -22,8 +22,8 @@ services:
   - type: web
     name: prime-chatbot-backend-ai
     env: docker
-    dockerfilePath: ./backend-ai/Dockerfile
-    dockerContext: ./backend-ai
+    dockerfilePath: backend-ai/Dockerfile
+    dockerContext: backend-ai
     envVars:
       - key: OPENAI_API_KEY
         sync: false
@@ -34,8 +34,8 @@ services:
   - type: web
     name: prime-chatbot-frontend
     env: docker
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
+    dockerfilePath: frontend/Dockerfile
+    dockerContext: frontend
     envVars:
       - key: VITE_API_URL
         sync: false
