@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // A user (admin) can manage multiple companies if needed, 
+  // currently requirements say "Admin can upload different company data"
+  // so we assume standard SaaS model where user owns companies.
+  companies Company[]
+}
+
+model Company {
+  id              String   @id @default(uuid())
+  name            String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  // Vector DB Namespace (using company ID is safest)
+  vectorNamespace String   @unique // Usually same as ID
+
+  documents       Document[]
+  apiKeys         ApiKey[]
+  usageLogs       UsageLog[]
+  leads           Lead[]
+  
+  systemPrompt    String?  @db.Text
+  greetingMessage String?  @db.Text
+  googleSheetId   String?  // Google Sheet ID for exporting leads
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  type      DocType
+  content   String   @db.Text // Extracted text content
+  metadata  Json?    // Original filename, URL, etc.
+  isActive  Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  name      String
+  email     String
+  phone     String?
+  createdAt DateTime @default(now())
+}
+
+model UsageLog {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  tokens    Int      @default(0)
+  timestamp DateTime @default(now())
+}
+
+enum DocType {
+  TEXT
+  PDF
+  DOCX
+  URL
+  FAQ
+}

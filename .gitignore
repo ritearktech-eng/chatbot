@@ -1,0 +1,34 @@
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules
+venv/
+__pycache__/
+.pytest_cache/
+dist/
+build/
+coverage/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Project Specific
+backend-ai/venv/
+backend-ai/__pycache__/
+backend-node/dist/
+frontend/dist/
+frontend/build/
