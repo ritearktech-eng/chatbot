@@ -8,5 +8,14 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true
-    }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "prisma/**/*",
+        "test_stale_token.ts",
+        "node_modules",
+        "dist"
+    ]
 }
