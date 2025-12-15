@@ -20,7 +20,10 @@ export const endChatSession = async (req: Request, res: Response) => {
         // 2. Summarize Conversation
         let summary = "No summary available.";
         try {
-            const aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+            let aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+            if (!aiServiceUrl.startsWith('http')) {
+                aiServiceUrl = `http://${aiServiceUrl}`;
+            }
             const summarizationRes = await axios.post(`${aiServiceUrl}/chat/summarize`, {
                 history: history
             });
