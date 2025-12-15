@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { API_URL } from "../config";
 
 export const ApiConfig = () => {
     const [companies, setCompanies] = useState<any[]>([]);
 
     useEffect(() => {
-        axios.get("http://localhost:3000/company/list", {
+        axios.get(`${API_URL}/company/list`, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         }).then(res => setCompanies(res.data));
     }, []);
@@ -25,7 +26,7 @@ export const ApiConfig = () => {
 
                         <h3 className="font-semibold">Widget Embed Code</h3>
                         <pre className="p-4 bg-slate-900 text-white rounded-md text-sm overflow-x-auto">
-                            {`<script src="http://localhost:3000/widget.js" data-company-id="${company.id}"></script>`}
+                            {`<script src="${API_URL}/widget.js" data-company-id="${company.id}"></script>`}
                         </pre>
                         <Button variant="outline" onClick={() => navigator.clipboard.writeText(company.id)}>
                             Copy Company ID

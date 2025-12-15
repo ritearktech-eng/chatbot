@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { API_URL } from "../config";
 
 interface Message {
     role: "user" | "assistant";
@@ -50,8 +51,7 @@ export function ChatPage() {
         const fetchCompanies = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
-                const res = await fetch(`${apiUrl}/company/list`, {
+                const res = await fetch(`${API_URL}/company/list`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -178,8 +178,7 @@ export function ChatPage() {
                     // Submit to Backend
                     try {
                         const token = localStorage.getItem("token");
-                        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
-                        await fetch(`${apiUrl}/company/lead`, {
+                        await fetch(`${API_URL}/company/lead`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                             body: JSON.stringify({ companyId: selectedCompanyId, ...finalData })
@@ -206,7 +205,6 @@ export function ChatPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
             const payload: any = {
                 query: inputType === "text" ? input : "",
@@ -218,7 +216,7 @@ export function ChatPage() {
                 payload.inputAudio = audioData;
             }
 
-            const response = await fetch(`${apiUrl}/chat/${selectedCompanyId}`, {
+            const response = await fetch(`${API_URL}/chat/${selectedCompanyId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -268,12 +266,11 @@ export function ChatPage() {
         setIsLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
             // Only end if we have some lead data or at least chat history
             // We can just send what we have.
 
-            await fetch(`${apiUrl}/company/end-session`, {
+            await fetch(`${API_URL}/company/end-session`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

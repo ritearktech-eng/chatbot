@@ -4,6 +4,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Label } from "../components/ui/label";
+import { API_URL } from "../config";
 
 interface Company {
     id: string;
@@ -60,7 +61,7 @@ export const DataManagement = () => {
 
     const fetchCompanies = async () => {
         try {
-            const res = await axios.get("http://localhost:3000/company/list", config);
+            const res = await axios.get(`${API_URL}/company/list`, config);
             setCompanies(res.data);
             if (res.data.length > 0 && !selectedCompanyId) setSelectedCompanyId(res.data[0].id);
         } catch (error) {
@@ -70,7 +71,7 @@ export const DataManagement = () => {
 
     const createCompany = async () => {
         try {
-            await axios.post("http://localhost:3000/company/create", { name: newCompanyName }, config);
+            await axios.post(`${API_URL}/company/create`, { name: newCompanyName }, config);
             setNewCompanyName("");
             fetchCompanies();
         } catch (error) { alert("Failed to create company"); }
@@ -79,7 +80,7 @@ export const DataManagement = () => {
     const updateCompany = async () => {
         if (!selectedCompanyId) return;
         try {
-            await axios.patch(`http://localhost:3000/company/${selectedCompanyId}`, editFormData, config);
+            await axios.patch(`${API_URL}/company/${selectedCompanyId}`, editFormData, config);
             alert("Company updated successfully!");
             fetchCompanies();
             setEditMode(false);
@@ -97,7 +98,7 @@ export const DataManagement = () => {
         formData.append("companyId", selectedCompanyId);
 
         try {
-            await axios.post("http://localhost:3000/company/upload", formData, {
+            await axios.post(`${API_URL}/company/upload`, formData, {
                 headers: { ...config.headers, "Content-Type": "multipart/form-data" }
             });
             alert("Uploaded!");

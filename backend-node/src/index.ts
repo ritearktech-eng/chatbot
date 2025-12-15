@@ -24,14 +24,38 @@ app.use('/chat', chatRoutes);
 // Serve widget static file
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Health check and Root route
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', service: 'backend-node', uptime: process.uptime() });
+});
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'backend-node' });
 });
 
 if (require.main === module) {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
+        console.log(`Initial memory usage: ${JSON.stringify(process.memoryUsage())}`);
     });
+
+    // Graceful shutdown
+    const shutdown = (signal: string) => {
+        console.log(`Received ${signal}. Shutting down gracefully...`);
+        server.close(() => {
+            console.log('Server closed.');
+            process.exit(0);
+        });
+
+        // Force close after 10s
+        setTimeout(() => {
+            console.error('Could not close connections in time, forcefully shutting down');
+            process.exit(1);
+        }, 10000);
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 export default app;

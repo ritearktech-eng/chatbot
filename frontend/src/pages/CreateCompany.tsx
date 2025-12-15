@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { API_URL } from "../config";
 
 export function CreateCompany() {
     const navigate = useNavigate();
@@ -21,9 +22,8 @@ export function CreateCompany() {
 
         try {
             const token = localStorage.getItem("token");
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-            const response = await fetch(`${apiUrl}/company/create`, {
+            const response = await fetch(`${API_URL}/company/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

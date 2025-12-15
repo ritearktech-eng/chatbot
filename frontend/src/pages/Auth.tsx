@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { API_URL } from "../config";
 
 const authSchema = z.object({
     email: z.string().email(),
@@ -26,8 +27,7 @@ export const AuthPage = ({ isRegister = false }) => {
     const onSubmit = async (data: AuthFormData) => {
         try {
             const endpoint = isRegister ? "/auth/register" : "/auth/login";
-            // In prod use env var
-            const res = await axios.post(`http://localhost:3000${endpoint}`, data);
+            const res = await axios.post(`${API_URL}${endpoint}`, data);
             localStorage.setItem("token", res.data.token);
             navigate("/dashboard");
         } catch (err: any) {

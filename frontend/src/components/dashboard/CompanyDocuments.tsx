@@ -3,6 +3,7 @@ import axios from "axios";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Loader2, Trash2, FileText, Eye, EyeOff } from "lucide-react";
+import { API_URL } from "../../config";
 
 interface Document {
     id: string;
@@ -36,7 +37,7 @@ export const CompanyDocuments = ({ companyId }: CompanyDocumentsProps) => {
     const fetchDocuments = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:3000/company/${companyId}/documents`, config);
+            const res = await axios.get(`${API_URL}/company/${companyId}/documents`, config);
             setDocuments(res.data);
         } catch (error) {
             console.error(error);
@@ -49,7 +50,7 @@ export const CompanyDocuments = ({ companyId }: CompanyDocumentsProps) => {
         setTogglingId(doc.id);
         try {
             const newStatus = !doc.isActive;
-            await axios.patch(`http://localhost:3000/company/${companyId}/documents/${doc.id}/status`, { isActive: newStatus }, config);
+            await axios.patch(`${API_URL}/company/${companyId}/documents/${doc.id}/status`, { isActive: newStatus }, config);
 
             setDocuments(documents.map(d => d.id === doc.id ? { ...d, isActive: newStatus } : d));
         } catch (error) {
@@ -64,7 +65,7 @@ export const CompanyDocuments = ({ companyId }: CompanyDocumentsProps) => {
 
         setDeletingId(docId);
         try {
-            await axios.delete(`http://localhost:3000/company/${companyId}/documents/${docId}`, config);
+            await axios.delete(`${API_URL}/company/${companyId}/documents/${docId}`, config);
             setDocuments(documents.filter(d => d.id !== docId));
         } catch (error) {
             alert("Failed to delete document");
