@@ -11,27 +11,6 @@ A full-stack SaaS platform for building custom AI chatbots.
 
 ## 🚀 Deployment Guide (Render)
 
-You will deploy 3 services: **Backend (Node)**, **Backend (AI)**, and **Frontend**.
-
-### 1. Database (PostgreSQL)
-- Create a PostgreSQL database (e.g., on Render or Neon.tech).
-- Copy the **Connection String**.
-
-### 2. Backend Node API (Web Service)
-Helper for main application logic and database.
-1.  **Connect Repo**: Select `backend-node` directory (Repository: `Root Directory` -> `backend-node`).
-2.  **Runtime**: Node.js
-3.  **Build Command**: `npm install && npx prisma generate && npm run build`
-4.  **Start Command**: `npm start`
-5.  **Environment Variables**:
-    - `DATABASE_URL`: (Your Postgres Connection String)
-    - `JWT_SECRET`: (A random secret string)
-    - `AI_SERVICE_URL`: (The URL of your Python Backend, e.g., `https://my-python-app.onrender.com`)
-    - `GOOGLE_SERVICE_ACCOUNT_JSON`: (Paste your full Google Service Account JSON content here for Sheets integration)
-
-### 3. Backend AI API (Web Service)
-Helper for AI processing and vector search.
-1.  **Connect Repo**: Select `backend-ai` directory permissions (Repository: `Root Directory` -> `backend-ai`).
 2.  **Runtime**: Python 3
 3.  **Build Command**: `pip install -r requirements.txt`
 4.  **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 10000`

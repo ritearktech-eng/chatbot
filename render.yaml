@@ -1,0 +1,44 @@
+services:
+  # Backend Node API
+  - type: web
+    name: prime-chatbot-backend-node
+    runtime: docker
+    dockerfilePath: ./backend-node/Dockerfile
+    dockerContext: ./backend-node
+    envVars:
+      - key: DATABASE_URL
+        sync: false # User must provide this
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: prime-chatbot-backend-ai
+          property: url
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+
+  # Backend AI API
+  - type: web
+    name: prime-chatbot-backend-ai
+    runtime: docker
+    dockerfilePath: ./backend-ai/Dockerfile
+    dockerContext: ./backend-ai
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+
+  # Frontend
+  - type: web
+    name: prime-chatbot-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: prime-chatbot-backend-node
+          property: url
