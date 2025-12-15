@@ -11,6 +11,7 @@ FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
+RUN apk add --no-cache openssl
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 # Prisma generate client in prod
