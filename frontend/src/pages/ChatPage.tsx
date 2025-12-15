@@ -157,7 +157,7 @@ export function ChatPage() {
         if (leadStep !== "COMPLETED") {
             setTimeout(async () => {
                 let nextMessage = "";
-                let nextStep = leadStep;
+                let nextStep: "INIT" | "ASK_NAME" | "ASK_EMAIL" | "ASK_PHONE" | "COMPLETED" = leadStep;
 
                 if (leadStep === "INIT") {
                     // Logic handles via useEffect now
