@@ -2,7 +2,7 @@ services:
   # Backend Node API
   - type: web
     name: prime-chatbot-backend-node
-    runtime: docker
+    env: docker
     dockerfilePath: ./backend-node/Dockerfile
     dockerContext: ./backend-node
     envVars:
@@ -21,7 +21,7 @@ services:
   # Backend AI API
   - type: web
     name: prime-chatbot-backend-ai
-    runtime: docker
+    env: docker
     dockerfilePath: ./backend-ai/Dockerfile
     dockerContext: ./backend-ai
     envVars:
@@ -33,7 +33,7 @@ services:
   # Frontend
   - type: web
     name: prime-chatbot-frontend
-    runtime: docker
+    env: docker
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     envVars:
