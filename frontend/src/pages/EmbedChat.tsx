@@ -39,7 +39,7 @@ export function EmbedChat() {
         scrollToBottom();
     }, [messages]);
 
-    // Initial greeting
+    // Initial greeting & Restore session
     useEffect(() => {
         if (!companyId) {
             setMessages([{ role: "assistant", content: "Invalid configuration: No Company ID." }]);
@@ -47,11 +47,12 @@ export function EmbedChat() {
         }
 
         // Check if lead exists in session
-        const hasLead = sessionStorage.getItem(`lead_captured_${companyId}`);
+        const storedLead = sessionStorage.getItem(`lead_data_${companyId}`);
 
-        if (hasLead) {
+        if (storedLead) {
+            setLeadData(JSON.parse(storedLead));
             setLeadStep("COMPLETED");
-            setMessages([{ role: "assistant", content: "Hello! How can I help you today?" }]);
+            setMessages([{ role: "assistant", content: "Welcome back! How can I help you?" }]);
         } else {
             setLeadStep("ASK_NAME");
             setMessages([
@@ -102,7 +103,7 @@ export function EmbedChat() {
                         });
                         nextMessage = "Thank you! I've saved your details. How can I help you today?";
                         nextStep = "COMPLETED";
-                        sessionStorage.setItem(`lead_captured_${companyId}`, "true");
+                        sessionStorage.setItem(`lead_data_${companyId}`, JSON.stringify(finalData));
                     } catch (e) {
                         console.error("Failed to save lead", e);
                         nextMessage = "Thanks. How can I help you today?";
@@ -213,8 +214,50 @@ export function EmbedChat() {
         }
     };
 
+    const handleEndChat = async () => {
+        if (!companyId || messages.length < 2) return;
+        setIsLoading(true);
+        try {
+            await fetch(`${API_URL}/company/end-session`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    companyId,
+                    history: messages.map(m => ({ role: m.role, content: m.content })),
+                    leadData: leadData // Send the captured lead data
+                })
+            });
+
+            setMessages([{ role: "assistant", content: "Session ended. Thank you!" }]);
+            // Don't clear lead data so they can start new chat without re-entry if they want, 
+            // or we could clear it. For now, keep it.
+        } catch (err) {
+            console.error("End chat error", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="flex flex-col h-screen bg-background">
+            {/* Simple Header */}
+            <div className="p-3 border-b flex justify-between items-center bg-card shadow-sm z-10">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                    <Bot className="h-4 w-4" /> AI Support
+                </div>
+                {leadStep === "COMPLETED" && (
+                    <Button
+                        variant="ghost"
+                        size="xs"
+                        className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                        onClick={handleEndChat}
+                        disabled={isLoading}
+                    >
+                        End Chat
+                    </Button>
+                )}
+            </div>
+
             <div className="flex-1 overflow-y-auto space-y-4 p-4">
                 {messages.map((msg, idx) => (
                     <div

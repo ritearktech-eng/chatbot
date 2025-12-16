@@ -62,10 +62,11 @@ export function ChatPage() {
                         setSelectedCompanyId(initialCompanyId);
 
                         // Check if lead exists in session
-                        const hasLead = sessionStorage.getItem(`lead_captured_${initialCompanyId}`);
+                        const storedLead = sessionStorage.getItem(`lead_data_${initialCompanyId}`);
                         const greeting = data[0].greetingMessage || `Connected to ${data[0].name}. Ask me anything about your data!`;
 
-                        if (hasLead) {
+                        if (storedLead) {
+                            setLeadData(JSON.parse(storedLead));
                             setLeadStep("COMPLETED");
                             setMessages([{ role: "assistant", content: greeting }]);
                         } else {
@@ -186,7 +187,7 @@ export function ChatPage() {
                         nextMessage = "Thank you! I've saved your details. How can I help you today?";
                         nextStep = "COMPLETED";
                         // Save to session to avoid asking again this session
-                        sessionStorage.setItem(`lead_captured_${selectedCompanyId}`, "true");
+                        sessionStorage.setItem(`lead_data_${selectedCompanyId}`, JSON.stringify(finalData));
                     } catch (e) {
                         console.error("Failed to save lead", e);
                         nextMessage = "Thanks. How can I help you today?";
@@ -332,10 +333,11 @@ export function ChatPage() {
                             const company = companies.find(c => c.id === newId);
 
                             // Check if lead exists in session
-                            const hasLead = sessionStorage.getItem(`lead_captured_${newId}`);
+                            const storedLead = sessionStorage.getItem(`lead_data_${newId}`);
                             const greeting = company?.greetingMessage || `Connected to ${company?.name}. Ask me anything about your data!`;
 
-                            if (hasLead) {
+                            if (storedLead) {
+                                setLeadData(JSON.parse(storedLead));
                                 setLeadStep("COMPLETED");
                                 setMessages([{ role: "assistant", content: greeting }]);
                             } else {
