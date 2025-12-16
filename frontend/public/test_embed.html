@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Embed Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 40px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 12px;
+            width: 80%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0051a2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Test Your Chatbot Embed</h1>
+        <p>Enter your <strong>Company ID</strong> below to load the chatbot widget on this page.</p>
+
+        <input type="text" id="companyId" placeholder="Paste Company ID (e.g., 123e4567-...)" />
+        <br>
+        <button onclick="loadBot()">Load Chatbot</button>
+    </div>
+
+    <script>
+        function loadBot() {
+            const id = document.getElementById('companyId').value.trim();
+            if (!id) return alert('Please enter a Company ID');
+
+            // Remove existing script/styles if re-loading
+            const existingScript = document.getElementById('bot-loader');
+            if (existingScript) existingScript.remove();
+
+            const existingContainer = document.querySelector('.prime-chat-widget-container');
+            if (existingContainer) existingContainer.remove();
+
+            const existingIframe = document.querySelector('.prime-chat-iframe-container');
+            if (existingIframe) existingIframe.remove();
+
+            // Create new script tag
+            const script = document.createElement('script');
+            // Point to the deployed loader (modify if running locally)
+            script.src = "/loader.js";
+            script.setAttribute('data-company-id', id);
+            script.setAttribute('data-base-url', window.location.origin); // Dynamic base URL
+            script.id = 'bot-loader';
+            script.async = true;
+            document.body.appendChild(script);
+
+            alert('Chatbot loading... Check the bottom right corner!');
+        }
+    </script>
+</body>
+
+</html>
