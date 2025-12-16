@@ -7,6 +7,7 @@ import { DataManagement } from "./pages/DataManagement";
 import { ApiConfig } from "./pages/ApiConfig";
 import { ChatPage } from "./pages/ChatPage";
 import { CreateCompany } from "./pages/CreateCompany";
+import { EmbedChat } from "./pages/EmbedChat";
 
 function App() {
   const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -19,6 +20,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage isRegister />} />
+
+        {/* Public Embed Route */}
+        <Route path="/embed/:companyId" element={<EmbedChat />} />
 
         <Route path="/dashboard" element={
           <PrivateRoute>
