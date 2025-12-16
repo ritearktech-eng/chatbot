@@ -21,6 +21,7 @@ export const DataManagement = () => {
     const [companies, setCompanies] = useState<Company[]>([]);
     const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
     const [file, setFile] = useState<File | null>(null);
+    const [urlInput, setUrlInput] = useState("");
     const [loading, setLoading] = useState(false);
 
     // Create State
@@ -106,6 +107,26 @@ export const DataManagement = () => {
             setRefreshKey(prev => prev + 1);
         } catch (error) {
             alert("Upload failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUrlScrape = async () => {
+        if (!urlInput || !selectedCompanyId) return;
+        setLoading(true);
+        try {
+            await axios.post(`${API_URL}/company/upload`, {
+                companyId: selectedCompanyId,
+                type: 'URL',
+                content: urlInput
+            }, config);
+            alert("Scraped and added to Knowledge Base!");
+            setUrlInput("");
+            setRefreshKey(prev => prev + 1);
+        } catch (error) {
+            alert("Scraping failed. Ensure URL is valid.");
+            console.error(error);
         } finally {
             setLoading(false);
         }
