@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx prisma migrate deploy && node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "npx prisma generate && tsc",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "ts-node prisma/seed.ts"
