@@ -26,7 +26,12 @@ export const ApiConfig = () => {
 
                         <h3 className="font-semibold">Widget Embed Code</h3>
                         <pre className="p-4 bg-slate-900 text-white rounded-md text-sm overflow-x-auto">
-                            {`<script src="${API_URL}/widget.js" data-company-id="${company.id}"></script>`}
+                            {`<script 
+  src="${window.location.origin}/loader.js" 
+  data-company-id="${company.id}"
+  data-base-url="${window.location.origin}"
+  async
+></script>`}
                         </pre>
                         <Button variant="outline" onClick={() => navigator.clipboard.writeText(company.id)}>
                             Copy Company ID
