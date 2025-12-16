@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+let AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+if (!AI_SERVICE_URL.startsWith('http')) {
+    AI_SERVICE_URL = `http://${AI_SERVICE_URL}`;
+}
 
 export const ingestText = async (companyId: string, text: string, metadata: any) => {
     try {
