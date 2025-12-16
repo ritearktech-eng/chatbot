@@ -265,3 +265,34 @@ export const getCompanyLeads = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Fetch failed' });
     }
 };
+
+export const getDashboardStats = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).user.userId;
+
+        const [companiesCount, documentsCount, conversationsCount, recentCompany] = await Promise.all([
+            prisma.company.count({ where: { userId } }),
+            prisma.document.count({ where: { company: { userId } } }),
+            prisma.conversation.count({ where: { lead: { company: { userId } } } }),
+            prisma.company.findFirst({
+                where: { userId },
+                orderBy: { createdAt: 'desc' },
+                select: { name: true, createdAt: true }
+            })
+        ]);
+
+        res.json({
+            documents: documentsCount,
+            activeBots: companiesCount,
+            queries: conversationsCount,
+            recentActivity: recentCompany ? {
+                title: "System Update",
+                description: `Latest bot created: ${recentCompany.name}`,
+                time: recentCompany.createdAt
+            } : null
+        });
+    } catch (error) {
+        console.error("Stats fetch error:", error);
+        res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+};
