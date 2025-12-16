@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import companyRoutes from './routes/companyRoutes';
+import prisma from './utils/prisma';
 
 dotenv.config();
 
@@ -29,8 +30,14 @@ app.get('/', (req, res) => {
     res.json({ status: 'ok', service: 'backend-node', uptime: process.uptime() });
 });
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'backend-node' });
+app.get('/health', async (req, res) => {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        res.json({ status: 'ok', service: 'backend-node', database: 'connected' });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({ status: 'error', service: 'backend-node', database: 'disconnected', error: error });
+    }
 });
 
 if (require.main === module) {
