@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, MessageSquare, Database, Trash2, ExternalLink } from "lucide-react";
+import { Building2, MessageSquare, Database, Trash2 } from "lucide-react";
 import { API_URL } from "../config";
 
 interface Company {
@@ -93,7 +93,7 @@ export function CompaniesDashboard() {
                                     </div>
                                 </div>
                             </CardContent>
-                            <CardFooter className="flex gap-2 justify-between border-t p-4 bg-muted/20">
+                            <div className="flex gap-2 justify-between border-t p-4 bg-muted/20">
                                 <div className="flex gap-2">
                                     <Link to={`/dashboard/chat`}>
                                         <Button variant="outline" size="sm" title="Test Chat">
@@ -114,7 +114,7 @@ export function CompaniesDashboard() {
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
-                            </CardFooter>
+                            </div>
                         </Card>
                     ))}
                 </div>
