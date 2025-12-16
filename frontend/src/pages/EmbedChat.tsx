@@ -248,7 +248,7 @@ export function EmbedChat() {
                 {leadStep === "COMPLETED" && (
                     <Button
                         variant="ghost"
-                        size="xs"
+                        size="sm"
                         className="h-7 text-xs text-muted-foreground hover:text-destructive"
                         onClick={handleEndChat}
                         disabled={isLoading}
