@@ -20,6 +20,10 @@ export function EmbedChat() {
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    // Lead Collection State
+    const [leadStep, setLeadStep] = useState<"INIT" | "ASK_NAME" | "ASK_EMAIL" | "ASK_PHONE" | "COMPLETED">("INIT");
+    const [leadData, setLeadData] = useState({ name: "", email: "", phone: "" });
+
     // Voice Recording
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -42,24 +46,18 @@ export function EmbedChat() {
             return;
         }
 
-        // We could fetch company details here to get the custom greeting
-        // For now, let's just use a generic one to keep it fast, or fetch if needed.
-        // Let's fetch to be nice.
-        const fetchCompany = async () => {
-            try {
-                // Note: company/list is protected usually. 
-                // We might need a public endpoint for public details (name, greeting).
-                // If company/list is protected, this fail.
-                // Assuming we can't fetch details easily without a new public endpoint.
-                // We'll stick to a generic greeting or "how can I help?".
-                setMessages([
-                    { role: "assistant", content: "Hello! How can I help you today?" }
-                ]);
-            } catch (e) {
-                setMessages([{ role: "assistant", content: "Hello! How can I help you?" }]);
-            }
-        };
-        fetchCompany();
+        // Check if lead exists in session
+        const hasLead = sessionStorage.getItem(`lead_captured_${companyId}`);
+
+        if (hasLead) {
+            setLeadStep("COMPLETED");
+            setMessages([{ role: "assistant", content: "Hello! How can I help you today?" }]);
+        } else {
+            setLeadStep("ASK_NAME");
+            setMessages([
+                { role: "assistant", content: "Hello! Before we start, could I please get your name?" }
+            ]);
+        }
     }, [companyId]);
 
     const handleSend = async (inputType: "text" | "voice" = "text", audioData?: string) => {
@@ -75,6 +73,48 @@ export function EmbedChat() {
         setMessages((prev) => [...prev, userMessage]);
         setInput("");
         setIsLoading(true);
+
+        // --- Lead Collection Flow ---
+        if (leadStep !== "COMPLETED") {
+            setTimeout(async () => {
+                let nextMessage = "";
+                let nextStep: typeof leadStep = leadStep;
+
+                if (leadStep === "ASK_NAME") {
+                    setLeadData(prev => ({ ...prev, name: userContent }));
+                    nextMessage = "Nice to meet you! What is your email address?";
+                    nextStep = "ASK_EMAIL";
+                } else if (leadStep === "ASK_EMAIL") {
+                    setLeadData(prev => ({ ...prev, email: userContent }));
+                    nextMessage = "Thanks! Lastly, what is your phone number?";
+                    nextStep = "ASK_PHONE";
+                } else if (leadStep === "ASK_PHONE") {
+                    const finalData = { ...leadData, phone: userContent };
+                    setLeadData(finalData);
+
+                    // Submit to Backend (Public Endpoint)
+                    try {
+                        await fetch(`${API_URL}/company/lead`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ companyId, ...finalData })
+                        });
+                        nextMessage = "Thank you! I've saved your details. How can I help you today?";
+                        nextStep = "COMPLETED";
+                        sessionStorage.setItem(`lead_captured_${companyId}`, "true");
+                    } catch (e) {
+                        console.error("Failed to save lead", e);
+                        nextMessage = "Thanks. How can I help you today?";
+                        nextStep = "COMPLETED";
+                    }
+                }
+
+                setMessages(prev => [...prev, { role: "assistant", content: nextMessage }]);
+                setLeadStep(nextStep);
+                setIsLoading(false);
+            }, 600);
+            return;
+        }
 
         try {
             const payload: any = {
