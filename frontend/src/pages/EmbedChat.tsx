@@ -4,7 +4,6 @@ import ReactMarkdown from 'react-markdown';
 import { Send, Bot, User, Loader2, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { API_URL } from "../config";
 
