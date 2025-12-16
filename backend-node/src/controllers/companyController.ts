@@ -245,23 +245,23 @@ export const toggleDocumentStatus = async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ error: 'Update failed' });
     }
+};
 
-
-    export const getCompanyLeads = async (req: Request, res: Response) => {
-        try {
-            const { companyId } = req.params;
-            const leads = await prisma.lead.findMany({
-                where: { companyId },
-                include: {
-                    conversations: {
-                        orderBy: { createdAt: 'desc' }
-                    }
-                },
-                orderBy: { createdAt: 'desc' }
-            });
-            res.json(leads);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Fetch failed' });
-        }
-    };
+export const getCompanyLeads = async (req: Request, res: Response) => {
+    try {
+        const { companyId } = req.params;
+        const leads = await prisma.lead.findMany({
+            where: { companyId },
+            include: {
+                conversations: {
+                    orderBy: { createdAt: 'desc' }
+                }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(leads);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Fetch failed' });
+    }
+};
