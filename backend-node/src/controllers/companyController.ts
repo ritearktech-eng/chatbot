@@ -196,7 +196,11 @@ export const deleteDocument = async (req: Request, res: Response) => {
         if (company) {
             // Delete from Vector DB
             // We need to pass the vectorNamespace (which acts as companyId for AI service)
-            await deleteDocumentVectors(company.vectorNamespace, docId);
+            try {
+                await deleteDocumentVectors(company.vectorNamespace, docId);
+            } catch (err) {
+                console.error("Vector deletion failed (proceeding with DB delete):", err);
+            }
         }
 
         // Delete from Postgres

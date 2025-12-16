@@ -25,6 +25,16 @@ services:
       - key: GOOGLE_SERVICE_ACCOUNT_JSON
         sync: false
 
+  # Qdrant Vector DB
+  - type: pserv
+    name: prime-chatbot-qdrant
+    env: docker
+    image: qdrant/qdrant:latest
+    disk:
+      name: qdrant-disk
+      mountPath: /qdrant/storage
+      sizeGB: 10
+
   # Backend AI API
   - type: web
     name: prime-chatbot-backend-ai
@@ -35,7 +45,10 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: QDRANT_URL
-        sync: false
+        fromService:
+          type: pserv
+          name: prime-chatbot-qdrant
+          property: hostport
 
   # Frontend
   - type: web
