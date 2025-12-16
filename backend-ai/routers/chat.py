@@ -92,11 +92,12 @@ async def summarize_conversation(request: SummarizeRequest):
         prompt = f"""Analyze the following conversation.
 1. Summarize it in 2-3 sentences.
 2. Rate the lead quality as HOT (ready to buy/highly interested), WARM (interested but needs info), or COLD (not interested).
+3. Identify 3-5 key topics or concepts discussed.
 
 Conversation:
 {conversation_text}
 
-Provide response in JSON format: {{ "summary": "...", "score": "HOT" }}"""
+Provide response in JSON format: {{ "summary": "...", "score": "HOT", "topics": ["topic1", "topic2"] }}"""
 
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         

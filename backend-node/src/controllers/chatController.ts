@@ -55,6 +55,10 @@ export const endChatSession = async (req: Request, res: Response) => {
             });
             summary = summarizationRes.data.summary;
             score = summarizationRes.data.score || "NEW";
+
+            if (summarizationRes.data.topics && Array.isArray(summarizationRes.data.topics)) {
+                summary += `\n\nTopics: ${summarizationRes.data.topics.join(", ")}`;
+            }
         } catch (err) {
             console.error("Summarization failed:", err);
             summary = "Summarization service unavailable.";
