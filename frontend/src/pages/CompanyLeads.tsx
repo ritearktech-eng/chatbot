@@ -2,10 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, ChevronDown, ChevronUp, User, Bot } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { API_URL } from "../config";
 
 interface Message {
@@ -81,7 +78,7 @@ export function CompanyLeads() {
                                         <CardDescription>{lead.email} • {lead.phone || "No Phone"}</CardDescription>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <Badge className={getScoreColor(lead.status)}>{lead.status || "NEW"}</Badge>
+                                        <span className={`px-2 py-1 rounded text-xs font-semibold text-white ${getScoreColor(lead.status)}`}>{lead.status || "NEW"}</span>
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -101,7 +98,7 @@ export function CompanyLeads() {
                                                 <div key={conv.id} className="space-y-2 border rounded-lg p-3 bg-background">
                                                     <div className="flex justify-between text-xs text-muted-foreground mb-2">
                                                         <span>{new Date(conv.createdAt).toLocaleString()}</span>
-                                                        <Badge variant="outline">{conv.score}</Badge>
+                                                        <span className="px-2 py-0.5 border rounded text-xs">{conv.score}</span>
                                                     </div>
 
                                                     {conv.summary && (
@@ -110,20 +107,20 @@ export function CompanyLeads() {
                                                         </div>
                                                     )}
 
-                                                    <ScrollArea className="h-[200px] pr-4">
+                                                    <div className="h-[200px] overflow-y-auto pr-4 border rounded p-2">
                                                         <div className="space-y-3">
                                                             {conv.history.map((msg, idx) => (
                                                                 <div key={idx} className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                                                     <div className={`rounded-lg px-3 py-2 text-sm max-w-[80%] ${msg.role === 'user'
-                                                                            ? 'bg-primary text-primary-foreground'
-                                                                            : 'bg-muted text-foreground'
+                                                                        ? 'bg-primary text-primary-foreground'
+                                                                        : 'bg-muted text-foreground'
                                                                         }`}>
                                                                         {msg.content}
                                                                     </div>
                                                                 </div>
                                                             ))}
                                                         </div>
-                                                    </ScrollArea>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
