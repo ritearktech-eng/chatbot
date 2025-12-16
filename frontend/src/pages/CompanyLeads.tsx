@@ -83,7 +83,7 @@ export function CompanyLeads() {
             ].join(",");
         });
 
-        const csvContent = "data:text/csv;charset=utf-8," + ["Name,Email,Phone,Status,Summary,Latest Score,Topics", ...rows].join("\n");
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
