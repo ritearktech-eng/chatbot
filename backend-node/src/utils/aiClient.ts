@@ -46,3 +46,13 @@ export const updateDocumentStatus = async (companyId: string, docId: string, isA
         throw new Error('AI Service Update Failed');
     }
 };
+
+export const generateChatResponse = async (payload: any) => {
+    try {
+        const response = await axios.post(`${AI_SERVICE_URL}/chat/generate`, payload);
+        return response.data;
+    } catch (error) {
+        console.error('Error generating chat response:', error);
+        throw new Error('AI Service Chat Failed');
+    }
+};

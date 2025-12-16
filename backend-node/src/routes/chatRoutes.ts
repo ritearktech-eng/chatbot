@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import axios from 'axios';
-import { PrismaClient } from '@prisma/client';
+import { generateChatResponse } from '../utils/aiClient';
+import prisma from '../utils/prisma';
 
 const router = Router();
-const prisma = new PrismaClient();
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
 router.post('/:companyId', async (req, res) => {
     try {
@@ -18,7 +16,7 @@ router.post('/:companyId', async (req, res) => {
         }
 
         // Call AI Service
-        const aiResponse = await axios.post(`${AI_SERVICE_URL}/chat/generate`, {
+        const aiResponse = await generateChatResponse({
             companyId: company.vectorNamespace, // Use namespace
             query,
             history: history || [],
@@ -27,7 +25,7 @@ router.post('/:companyId', async (req, res) => {
             systemPrompt: company.systemPrompt
         });
 
-        res.json(aiResponse.data);
+        res.json(aiResponse);
     } catch (error) {
         console.error('Chat error:', error);
         res.status(500).json({ error: 'Failed to generate response' });

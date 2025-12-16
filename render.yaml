@@ -34,6 +34,11 @@ services:
       name: qdrant-disk
       mountPath: /qdrant/storage
       sizeGB: 10
+    envVars:
+      - key: QDRANT__SERVICE__API_KEY
+        generateValue: true
+      - key: QDRANT_ALLOW_EMPTY_API_KEY # Security best practice
+        value: "false"
 
   # Backend AI API
   - type: web
@@ -49,6 +54,11 @@ services:
           type: pserv
           name: prime-chatbot-qdrant
           property: hostport
+      - key: QDRANT_API_KEY
+        fromService:
+          type: pserv
+          name: prime-chatbot-qdrant
+          property: QDRANT__SERVICE__API_KEY
 
   # Frontend
   - type: web
