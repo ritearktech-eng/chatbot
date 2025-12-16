@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, MessageSquare, Database, Trash2 } from "lucide-react";
+import { Building2, MessageSquare, Database, Trash2, Users } from "lucide-react";
 import { API_URL } from "../config";
 
 interface Company {
@@ -103,6 +103,11 @@ export function CompaniesDashboard() {
                                     <Link to={`/dashboard/data`}>
                                         <Button variant="outline" size="sm" title="Manage Data">
                                             <Database className="h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                    <Link to={`/dashboard/company/${company.id}/leads`}>
+                                        <Button variant="default" size="sm" title="View Leads">
+                                            <Users className="h-4 w-4 mr-1" /> Leads
                                         </Button>
                                     </Link>
                                 </div>

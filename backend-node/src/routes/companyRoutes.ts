@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCompany, uploadData, getCompanies, deleteCompany, regenerateApiKey, getCompanyDocuments, deleteDocument, toggleDocumentStatus, updateCompany, createLead } from '../controllers/companyController';
+import { createCompany, uploadData, getCompanies, deleteCompany, regenerateApiKey, getCompanyDocuments, deleteDocument, toggleDocumentStatus, updateCompany, createLead, getCompanyLeads } from '../controllers/companyController';
 import { authenticate } from '../middleware/authMiddleware';
 import upload from '../middleware/uploadMiddleware';
 import { endChatSession } from '../controllers/chatController';
@@ -22,5 +22,6 @@ router.post('/regenerate-key', regenerateApiKey);
 router.get('/:companyId/documents', getCompanyDocuments);
 router.delete('/:companyId/documents/:docId', deleteDocument);
 router.patch('/:companyId/documents/:docId/status', toggleDocumentStatus);
+router.get('/:companyId/leads', getCompanyLeads);
 
 export default router;

@@ -89,23 +89,29 @@ async def summarize_conversation(request: SummarizeRequest):
         # Convert history format to string
         conversation_text = "\n".join([f"{msg['role'].upper()}: {msg['content']}" for msg in request.history])
         
-        prompt = f"""Summarize the following conversation in 2-3 sentences. Focus on the user's main intent and the outcome.
-        
+        prompt = f"""Analyze the following conversation.
+1. Summarize it in 2-3 sentences.
+2. Rate the lead quality as HOT (ready to buy/highly interested), WARM (interested but needs info), or COLD (not interested).
+
 Conversation:
 {conversation_text}
 
-Summary:"""
+Provide response in JSON format: {{ "summary": "...", "score": "HOT" }}"""
 
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=100
+            max_tokens=150,
+            response_format={ "type": "json_object" }
         )
         
-        summary = response.choices[0].message.content.strip()
-        return {"summary": summary}
+        import json
+        content = response.choices[0].message.content.strip()
+        result = json.loads(content)
+        
+        return result
 
     except Exception as e:
         print(f"Summarization error: {e}")

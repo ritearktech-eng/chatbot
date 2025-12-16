@@ -17,8 +17,34 @@ export const endChatSession = async (req: Request, res: Response) => {
         const company = await prisma.company.findUnique({ where: { id: companyId } });
         if (!company) return res.status(404).json({ error: "Company not found" });
 
-        // 2. Summarize Conversation
+        // 2. Find or Create Lead
+        let leadId = null;
+        if (leadData && (leadData.email || leadData.phone)) {
+            // Try matching by email
+            let lead = await prisma.lead.findFirst({
+                where: {
+                    companyId,
+                    email: leadData.email
+                }
+            });
+
+            if (!lead) {
+                lead = await prisma.lead.create({
+                    data: {
+                        companyId,
+                        name: leadData.name || "Anonymous",
+                        email: leadData.email || "N/A",
+                        phone: leadData.phone
+                    }
+                });
+            }
+            leadId = lead.id;
+        }
+
+        // 3. Summarize Conversation & Get Score
         let summary = "No summary available.";
+        let score = "NEW";
+
         try {
             let aiServiceUrl = process.env.AI_SERVICE_URL || 'http://localhost:8000';
             if (!aiServiceUrl.startsWith('http')) {
@@ -28,12 +54,31 @@ export const endChatSession = async (req: Request, res: Response) => {
                 history: history
             });
             summary = summarizationRes.data.summary;
+            score = summarizationRes.data.score || "NEW";
         } catch (err) {
             console.error("Summarization failed:", err);
             summary = "Summarization service unavailable.";
         }
 
-        // 3. Export to Google Sheet (if configured)
+        // 4. Save Conversation to DB
+        if (leadId) {
+            await prisma.conversation.create({
+                data: {
+                    leadId,
+                    history: history, // Prisma handles Json type
+                    summary,
+                    score
+                }
+            });
+
+            // Update Lead Status based on latest score
+            await prisma.lead.update({
+                where: { id: leadId },
+                data: { status: score }
+            });
+        }
+
+        // 5. Export to Google Sheet (if configured)
         if (company.googleSheetId && process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
             try {
                 const serviceAccountAuth = new JWT({
@@ -50,7 +95,7 @@ export const endChatSession = async (req: Request, res: Response) => {
                 // Add header row if empty
                 await sheet.loadHeaderRow();
                 if (sheet.headerValues.length === 0) {
-                    await sheet.setHeaderRow(['Name', 'Email', 'Phone', 'Date', 'Summary']);
+                    await sheet.setHeaderRow(['Name', 'Email', 'Phone', 'Date', 'Summary', 'Score']);
                 }
 
                 await sheet.addRow({
@@ -58,7 +103,8 @@ export const endChatSession = async (req: Request, res: Response) => {
                     Email: leadData?.email || "N/A",
                     Phone: leadData?.phone || "N/A",
                     Date: new Date().toISOString(),
-                    Summary: summary
+                    Summary: summary,
+                    Score: score
                 });
 
                 console.log("Exported to Google Sheet");
@@ -68,7 +114,7 @@ export const endChatSession = async (req: Request, res: Response) => {
             }
         }
 
-        res.json({ message: "Session ended successfully", summary });
+        res.json({ message: "Session ended successfully", summary, score });
 
     } catch (error) {
         console.error("End session error:", error);

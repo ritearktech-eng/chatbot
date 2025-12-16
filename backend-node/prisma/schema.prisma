@@ -70,6 +70,20 @@ model Lead {
   name      String
   email     String
   phone     String?
+  status    String   @default("NEW") // HOT, WARM, COLD, NEW
+  
+  conversations Conversation[]
+
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  history   Json     // Array of message objects
+  summary   String?  @db.Text
+  score     String?
   createdAt DateTime @default(now())
 }
 

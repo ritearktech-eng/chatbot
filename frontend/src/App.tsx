@@ -8,6 +8,7 @@ import { ApiConfig } from "./pages/ApiConfig";
 import { ChatPage } from "./pages/ChatPage";
 import { CreateCompany } from "./pages/CreateCompany";
 import { CompaniesDashboard } from "./pages/CompaniesDashboard";
+import { CompanyLeads } from "./pages/CompanyLeads";
 import { EmbedChat } from "./pages/EmbedChat";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="api" element={<ApiConfig />} />
           <Route path="company/new" element={<CreateCompany />} />
           <Route path="companies" element={<CompaniesDashboard />} />
+          <Route path="company/:companyId/leads" element={<CompanyLeads />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/dashboard" />} />
