@@ -1,3 +1,8 @@
+databases:
+  - name: prime-chatbot-db
+    databaseName: prime_chatbot
+    user: prime_user
+
 services:
   # Backend Node API
   - type: web
@@ -7,7 +12,9 @@ services:
     dockerContext: backend-node
     envVars:
       - key: DATABASE_URL
-        sync: false # User must provide this
+        fromDatabase:
+          name: prime-chatbot-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: AI_SERVICE_URL
