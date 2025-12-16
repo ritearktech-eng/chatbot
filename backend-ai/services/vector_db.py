@@ -31,6 +31,16 @@ def ensure_collection(collection_name: str, vector_size: int = 1536):
         except Exception:
             pass # Ignore if already exists
 
+        # Ensure index for docId (required for filtering/updates)
+        try:
+            client.create_payload_index(
+                collection_name=collection_name,
+                field_name="docId",
+                field_schema=models.PayloadSchemaType.KEYWORD,
+            )
+        except Exception:
+            pass # Ignore if already exists
+
 def upsert_vectors(collection_name: str, points: list[models.PointStruct]):
     ensure_collection(collection_name)
     client.upsert(
