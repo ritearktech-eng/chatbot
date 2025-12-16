@@ -219,6 +219,31 @@ export const DataManagement = () => {
                     </CardContent>
                 </Card>
 
+                {/* Scrape URL Card */}
+                <Card className={!selectedCompanyId ? "opacity-50 pointer-events-none" : ""}>
+                    <CardHeader>
+                        <CardTitle>Import from Website</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label>Website URL</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="https://example.com"
+                                    value={urlInput}
+                                    onChange={(e) => setUrlInput(e.target.value)}
+                                />
+                                <Button onClick={handleUrlScrape} disabled={!urlInput || loading}>
+                                    {loading ? "Scraping..." : "Scrape"}
+                                </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                We will extract visible text from this page.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Create Company Card */}
                 <Card>
                     <CardHeader>
