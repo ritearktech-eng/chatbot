@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCompany, uploadData, getCompanies, deleteCompany, regenerateApiKey, getCompanyDocuments, deleteDocument, toggleDocumentStatus, updateCompany, createLead, getCompanyLeads } from '../controllers/companyController';
+import { createCompany, uploadData, getCompanies, deleteCompany, regenerateApiKey, getCompanyDocuments, deleteDocument, toggleDocumentStatus, updateCompany, createLead, getCompanyLeads, getDashboardStats } from '../controllers/companyController';
 import { authenticate } from '../middleware/authMiddleware';
 import upload from '../middleware/uploadMiddleware';
 import { endChatSession } from '../controllers/chatController';
@@ -15,6 +15,7 @@ router.use(authenticate);
 router.post('/create', createCompany);
 router.post('/upload', upload.single('file'), uploadData); // Supports file or text/url in body
 router.get('/list', getCompanies);
+router.get('/stats', getDashboardStats);
 router.patch('/:id', updateCompany);
 router.delete('/:id', deleteCompany);
 router.post('/regenerate-key', regenerateApiKey);

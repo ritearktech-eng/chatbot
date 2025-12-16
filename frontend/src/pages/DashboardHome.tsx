@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { API_URL } from "../config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Database, Users } from "lucide-react";
 
 export function DashboardHome() {
-    const [stats] = useState({
-        documents: 2, // Dummy data matches seed
+    const [stats, setStats] = useState({
+        documents: 0,
         queries: 0,
-        activeBots: 1
+        activeBots: 0,
+        recentActivity: null as any
     });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_URL}/company/stats`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setStats(res.data);
+            } catch (error) {
+                console.error("Failed to load dashboard stats", error);
+            }
+        };
+        fetchStats();
+    }, []);
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -28,7 +46,7 @@ export function DashboardHome() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">{stats.documents}</div>
-                        <p className="text-xs text-muted-foreground mt-1">+2 from seed data</p>
+                        <p className="text-xs text-muted-foreground mt-1">Across all companies</p>
                     </CardContent>
                 </Card>
 
@@ -39,7 +57,7 @@ export function DashboardHome() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">{stats.activeBots}</div>
-                        <p className="text-xs text-muted-foreground mt-1">Acme Corp Bot</p>
+                        <p className="text-xs text-muted-foreground mt-1">Deployed Chatbots</p>
                     </CardContent>
                 </Card>
 
@@ -50,7 +68,7 @@ export function DashboardHome() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold">{stats.queries}</div>
-                        <p className="text-xs text-muted-foreground mt-1">No traffic yet</p>
+                        <p className="text-xs text-muted-foreground mt-1">Total Conversations</p>
                     </CardContent>
                 </Card>
             </div>
@@ -67,12 +85,16 @@ export function DashboardHome() {
                                     <Database className="h-4 w-4 text-green-500" />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-medium leading-none">System Seeded</p>
+                                    <p className="text-sm font-medium leading-none">
+                                        {stats.recentActivity?.title || "System Ready"}
+                                    </p>
                                     <p className="text-sm text-muted-foreground">
-                                        Initial dummy data injected successfully.
+                                        {stats.recentActivity?.description || "Dashboard initialized successfully."}
                                     </p>
                                 </div>
-                                <div className="ml-auto text-xs text-muted-foreground">Just now</div>
+                                <div className="ml-auto text-xs text-muted-foreground">
+                                    {stats.recentActivity?.time ? new Date(stats.recentActivity.time).toLocaleTimeString() : "Now"}
+                                </div>
                             </div>
                         </div>
                     </CardContent>
