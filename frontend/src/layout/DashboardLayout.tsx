@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Database, Settings, LogOut, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Database, Settings, LogOut, MessageSquare, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const DashboardLayout = () => {
@@ -14,6 +14,7 @@ export const DashboardLayout = () => {
 
     const navItems = [
         { href: "/dashboard", icon: LayoutDashboard, label: "Overview", exact: true },
+        { href: "/dashboard/companies", icon: Building2, label: "Companies" },
         { href: "/dashboard/chat", icon: MessageSquare, label: "Chatbot" },
         { href: "/dashboard/data", icon: Database, label: "Knowledge Base" },
         { href: "/dashboard/api", icon: Settings, label: "Settings" },
