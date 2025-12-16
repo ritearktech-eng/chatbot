@@ -78,7 +78,8 @@ export function EmbedChat() {
         if (leadStep !== "COMPLETED") {
             setTimeout(async () => {
                 let nextMessage = "";
-                let nextStep: typeof leadStep = leadStep;
+                // Explicitly define the type to include "COMPLETED"
+                let nextStep: "INIT" | "ASK_NAME" | "ASK_EMAIL" | "ASK_PHONE" | "COMPLETED" = leadStep;
 
                 if (leadStep === "ASK_NAME") {
                     setLeadData(prev => ({ ...prev, name: userContent }));
