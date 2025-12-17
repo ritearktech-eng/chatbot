@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { parseFileContent, scrapeUrl } from '../utils/fileParser';
 import { ingestText, deleteCompanyVectors, deleteDocumentVectors, updateDocumentStatus } from '../utils/aiClient';
+import { exportToGoogleSheet } from '../utils/googleSheetExport';
 
 const prisma = new PrismaClient();
 
@@ -295,5 +296,42 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Stats fetch error:", error);
         res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+};
+
+export const exportLeadToSheet = async (req: Request, res: Response) => {
+    try {
+        const { companyId, leadId } = req.params;
+
+        const [company, lead] = await Promise.all([
+            prisma.company.findUnique({ where: { id: companyId } }),
+            prisma.lead.findUnique({
+                where: { id: leadId },
+                include: { conversations: { orderBy: { createdAt: 'desc' }, take: 1 } }
+            })
+        ]);
+
+        if (!company) return res.status(404).json({ error: "Company not found" });
+        if (!lead) return res.status(404).json({ error: "Lead not found" });
+
+        const lastConv = lead.conversations[0];
+        const summary = lastConv?.summary || "Manual Export";
+        const score = lastConv?.score || lead.status;
+
+        const success = await exportToGoogleSheet(company, {
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone
+        }, summary, score);
+
+        if (success) {
+            res.json({ message: "Lead exported to Google Sheet successfully" });
+        } else {
+            res.status(500).json({ error: "Failed to export lead. Check server logs." });
+        }
+
+    } catch (error) {
+        console.error("Export lead error:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };

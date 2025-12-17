@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Loader2, Download } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Download, FileSpreadsheet } from "lucide-react";
 import { API_URL } from "../config";
 
 interface Message {
@@ -93,8 +93,24 @@ export function CompanyLeads() {
         document.body.removeChild(link);
     };
 
+    const handleExportToSheet = async (e: React.MouseEvent, leadId: string) => {
+        e.stopPropagation();
+        if (!companyId) return;
+        try {
+            const token = localStorage.getItem("token");
+            await axios.post(`${API_URL}/company/${companyId}/leads/${leadId}/export`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("Lead exported to Google Sheet successfully!");
+        } catch (error) {
+            console.error("Export failed", error);
+            alert("Failed to export lead. Check if Google Sheet is configured correctly.");
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in">
+            {/* ... header ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h1 className="text-3xl font-bold tracking-tight">Leads & Conversations</h1>
                 <div className="flex items-center gap-2">
@@ -130,6 +146,15 @@ export function CompanyLeads() {
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <span className={`px-2 py-1 rounded text-xs font-semibold text-white ${getScoreColor(lead.status)}`}>{lead.status || "NEW"}</span>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            title="Send to Google Sheet"
+                                            onClick={(e) => handleExportToSheet(e, lead.id)}
+                                        >
+                                            <FileSpreadsheet className="h-4 w-4" />
+                                        </Button>
                                         <Button
                                             variant="ghost"
                                             size="sm"
