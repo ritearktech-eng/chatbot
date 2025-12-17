@@ -31,9 +31,16 @@ export const exportToGoogleSheet = async (company: { googleSheetId?: string | nu
             const sheet = doc.sheetsByIndex[0]; // Use first sheet
             console.log("Sheet Title:", sheet.title);
 
-            // Add header row if empty
-            await sheet.loadHeaderRow();
-            if (sheet.headerValues.length === 0) {
+            // Check for header row
+            try {
+                await sheet.loadHeaderRow();
+            } catch (e) {
+                // If loadHeaderRow fails (likely due to empty sheet), we'll set headers
+                console.log("Could not load header row (sheet might be empty), initializing headers...");
+            }
+
+            if (!sheet.headerValues || sheet.headerValues.length === 0) {
+                console.log("Setting new header row...");
                 await sheet.setHeaderRow(['Name', 'Email', 'Phone', 'Date', 'Summary', 'Score']);
             }
 
