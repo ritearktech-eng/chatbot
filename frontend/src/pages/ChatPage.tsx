@@ -321,7 +321,7 @@ export function ChatPage() {
                     leadData: leadData
                 };
 
-                const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+                // const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
 
                 // Try sendBeacon first (more reliable on exit), fall back to fetch
                 // Note: sendBeacon doesn't support custom headers like Authorization easily in all contexts, 
