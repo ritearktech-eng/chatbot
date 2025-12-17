@@ -57,12 +57,13 @@ export const AuthPage = ({ isRegister = false }) => {
                         <Button type="submit" className="w-full">
                             {isRegister ? "Register" : "Login"}
                         </Button>
-                        <div className="text-center text-sm">
+                        {/* Registration removed as per request */}
+                        {/* <div className="text-center text-sm">
                             {isRegister ? "Already have an account? " : "Don't have an account? "}
                             <a href={isRegister ? "/login" : "/register"} className="text-primary underline">
                                 {isRegister ? "Login" : "Register"}
                             </a>
-                        </div>
+                        </div> */}
                     </form>
                 </CardContent>
             </Card>
