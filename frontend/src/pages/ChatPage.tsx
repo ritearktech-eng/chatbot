@@ -321,7 +321,15 @@ export function ChatPage() {
                     leadData: leadData
                 };
 
-                // Use fetch with keepalive for reliable background request
+                const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+
+                // Try sendBeacon first (more reliable on exit), fall back to fetch
+                // Note: sendBeacon doesn't support custom headers like Authorization easily in all contexts, 
+                // but we can pass token in body or query if needed. 
+                // However, our backend expects Bearer token.
+                // fetch with keepalive is actually the modern standard replacing sendBeacon for this.
+                // Let's stick to fetch keepalive but ensure we catch errors.
+
                 fetch(`${API_URL}/company/end-session`, {
                     method: "POST",
                     headers: {
@@ -335,7 +343,18 @@ export function ChatPage() {
         };
 
         window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+        // Also listen for visibility change (mobile tab close often triggers this but not beforeunload)
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') {
+                handleBeforeUnload();
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
     }, [selectedCompanyId, messages, leadData]);
 
     return (
