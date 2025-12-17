@@ -39,13 +39,14 @@ export const createCompany = async (req: Request, res: Response) => {
 export const updateCompany = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { name, systemPrompt, greetingMessage } = req.body;
+        const { name, systemPrompt, greetingMessage, googleSheetId } = req.body;
 
         // Ensure only provided fields are updated
         const dataToUpdate: any = {};
         if (name !== undefined) dataToUpdate.name = name;
         if (systemPrompt !== undefined) dataToUpdate.systemPrompt = systemPrompt;
         if (greetingMessage !== undefined) dataToUpdate.greetingMessage = greetingMessage;
+        if (googleSheetId !== undefined) dataToUpdate.googleSheetId = googleSheetId;
 
         const company = await prisma.company.update({
             where: { id },
