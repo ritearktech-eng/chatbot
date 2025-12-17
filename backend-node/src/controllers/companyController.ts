@@ -10,6 +10,7 @@ export const createCompany = async (req: Request, res: Response) => {
     try {
         const { name, systemPrompt, greetingMessage } = req.body;
         const userId = (req as any).user.userId;
+        console.log("Creating company for user:", userId, "Data:", { name, systemPrompt, greetingMessage });
 
         const apiKey = uuidv4();
         const company = await prisma.company.create({
