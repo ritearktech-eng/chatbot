@@ -63,6 +63,14 @@ export const endChatSession = async (req: Request, res: Response) => {
             summary = "Summarization service unavailable.";
         }
 
+        // Fallback: If summary is still empty or default, and we have history, use the last user message
+        if ((!summary || summary === "No summary available.") && history && history.length > 0) {
+            const lastUserMsg = [...history].reverse().find((m: any) => m.role === 'user');
+            if (lastUserMsg) {
+                summary = `User asked: "${lastUserMsg.content.slice(0, 100)}..."`;
+            }
+        }
+
         // 4. Save Conversation to DB
         if (leadId) {
             await prisma.conversation.create({

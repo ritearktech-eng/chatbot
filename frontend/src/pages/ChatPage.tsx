@@ -305,7 +305,7 @@ export function ChatPage() {
         const timer = setTimeout(() => {
             console.log("Auto-ending chat due to inactivity");
             handleEndChat();
-        }, 10 * 60 * 1000); // 10 minutes
+        }, 1 * 60 * 1000); // 1 minute
 
         return () => clearTimeout(timer);
     }, [messages, selectedCompanyId, leadStep]);
