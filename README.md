@@ -72,3 +72,6 @@ To export leads to Google Sheets:
     - Node: `npm run dev`
     - Python: `uvicorn main:app --reload`
     - Frontend: `npm run dev`
+
+google sheet integration:
+1. our webserver link : "rite-ark-service-account@rite-ark-11nov25.iam.gserviceaccount.com"
