@@ -1,5 +1,7 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 interface LeadData {
     name: string;
@@ -61,11 +63,16 @@ export const exportToGoogleSheet = async (company: { googleSheetId?: string | nu
                 console.log("Row updated successfully");
             } else {
                 console.log("No existing row found. Appending new row...");
+
+                // Format for Dubai Time
+                const dubaiTime = toZonedTime(new Date(), 'Asia/Dubai');
+                const timestamp = format(dubaiTime, 'yyyy-MM-dd HH:mm:ss');
+
                 await sheet.addRow({
                     Name: leadData.name || "Anonymous",
                     Email: leadData.email || "N/A",
                     Phone: leadData.phone || "N/A",
-                    Date: new Date().toISOString(),
+                    Date: timestamp,
                     Summary: summary || "Pending",
                     Score: score || "Pending"
                 });

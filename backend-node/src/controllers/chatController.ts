@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import axios from 'axios';
 import { exportToGoogleSheet } from '../utils/googleSheetExport';
+import { sendTelegramMessage } from '../utils/telegramExport';
 
 export const endChatSession = async (req: Request, res: Response) => {
     try {
@@ -89,12 +90,18 @@ export const endChatSession = async (req: Request, res: Response) => {
             });
         }
 
-        // 5. Export to Google Sheet (if configured)
-        // 5. Export to Google Sheet (if configured)
+        // 5. Export to Google Sheet AND Telegram
         await exportToGoogleSheet(company, {
             name: leadData?.name || "Anonymous",
             email: leadData?.email || "N/A",
             phone: leadData?.phone || null
+        }, summary, score);
+
+        // Send Telegram Notification
+        await sendTelegramMessage(company, {
+            name: leadData?.name,
+            email: leadData?.email,
+            phone: leadData?.phone
         }, summary, score);
 
         res.json({ message: "Session ended successfully", summary, score });

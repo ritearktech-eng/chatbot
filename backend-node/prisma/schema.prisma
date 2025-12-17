@@ -40,6 +40,8 @@ model Company {
   systemPrompt    String?  @db.Text
   greetingMessage String?  @db.Text
   googleSheetId   String?  // Google Sheet ID for exporting leads
+  telegramBotToken String? // Telegram Bot Token
+  telegramChatId   String? // Telegram Chat ID
 }
 
 model Document {

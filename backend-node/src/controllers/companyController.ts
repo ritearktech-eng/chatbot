@@ -39,7 +39,7 @@ export const createCompany = async (req: Request, res: Response) => {
 export const updateCompany = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { name, systemPrompt, greetingMessage, googleSheetId } = req.body;
+        const { name, systemPrompt, greetingMessage, googleSheetId, telegramBotToken, telegramChatId } = req.body;
 
         // Ensure only provided fields are updated
         const dataToUpdate: any = {};
@@ -47,6 +47,8 @@ export const updateCompany = async (req: Request, res: Response) => {
         if (systemPrompt !== undefined) dataToUpdate.systemPrompt = systemPrompt;
         if (greetingMessage !== undefined) dataToUpdate.greetingMessage = greetingMessage;
         if (googleSheetId !== undefined) dataToUpdate.googleSheetId = googleSheetId;
+        if (telegramBotToken !== undefined) dataToUpdate.telegramBotToken = telegramBotToken;
+        if (telegramChatId !== undefined) dataToUpdate.telegramChatId = telegramChatId;
 
         const company = await prisma.company.update({
             where: { id },

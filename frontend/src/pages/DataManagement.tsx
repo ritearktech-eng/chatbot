@@ -13,6 +13,8 @@ interface Company {
     greetingMessage?: string;
     _count?: { documents: number };
     googleSheetId?: string;
+    telegramBotToken?: string;
+    telegramChatId?: string;
 }
 
 import { CompanyDocuments } from "../components/dashboard/CompanyDocuments";
@@ -33,7 +35,9 @@ export const DataManagement = () => {
         name: "",
         systemPrompt: "",
         greetingMessage: "",
-        googleSheetId: ""
+        googleSheetId: "",
+        telegramBotToken: "",
+        telegramChatId: ""
     });
 
     const [refreshKey, setRefreshKey] = useState(0);
@@ -54,7 +58,9 @@ export const DataManagement = () => {
                     name: company.name,
                     systemPrompt: company.systemPrompt || "",
                     greetingMessage: company.greetingMessage || "",
-                    googleSheetId: company.googleSheetId || ""
+                    googleSheetId: company.googleSheetId || "",
+                    telegramBotToken: company.telegramBotToken || "",
+                    telegramChatId: company.telegramChatId || ""
                 });
             }
         }
@@ -197,6 +203,24 @@ export const DataManagement = () => {
                                 Share your sheet with the service account email (check config).
                             </p>
                         </div>
+
+                        <div className="space-y-2">
+                            <Label>Telegram Bot Token</Label>
+                            <Input
+                                value={editFormData.telegramBotToken}
+                                onChange={(e) => setEditFormData({ ...editFormData, telegramBotToken: e.target.value })}
+                                placeholder="e.g. 123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Telegram Chat ID</Label>
+                            <Input
+                                value={editFormData.telegramChatId}
+                                onChange={(e) => setEditFormData({ ...editFormData, telegramChatId: e.target.value })}
+                                placeholder="e.g. -1001234567890"
+                            />
+                        </div>
+
                         <Button onClick={updateCompany}>Save Changes</Button>
                     </CardContent>
                 </Card>
