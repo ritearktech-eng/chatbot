@@ -54,3 +54,27 @@ ${summary}
         return false;
     }
 };
+
+export const getTelegramChatId = async (token: string): Promise<string | null> => {
+    try {
+        const url = `https://api.telegram.org/bot${token}/getUpdates`;
+        const res = await axios.get(url);
+
+        if (res.data.ok && res.data.result.length > 0) {
+            // Get the latest update
+            const updates = res.data.result;
+            const lastUpdate = updates[updates.length - 1];
+
+            // Extract chat ID (works for private chats and groups)
+            const chat = lastUpdate.message?.chat || lastUpdate.my_chat_member?.chat || lastUpdate.channel_post?.chat;
+
+            if (chat && chat.id) {
+                return String(chat.id);
+            }
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching Telegram updates:", error);
+        return null;
+    }
+};

@@ -7,6 +7,25 @@ import { exportToGoogleSheet } from '../utils/googleSheetExport';
 
 const prisma = new PrismaClient();
 
+import { getTelegramChatId } from '../utils/telegramExport';
+
+export const getTelegramId = async (req: Request, res: Response) => {
+    try {
+        const { token } = req.body;
+        if (!token) return res.status(400).json({ error: "Bot token required" });
+
+        const chatId = await getTelegramChatId(token);
+        if (chatId) {
+            res.json({ chatId });
+        } else {
+            res.status(404).json({ error: "No chat ID found. Send a message to the bot first." });
+        }
+    } catch (error) {
+        console.error("Get Telegram ID error:", error);
+        res.status(500).json({ error: "Failed to fetch chat ID" });
+    }
+};
+
 export const createCompany = async (req: Request, res: Response) => {
     try {
         const { name, systemPrompt, greetingMessage } = req.body;

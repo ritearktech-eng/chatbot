@@ -217,8 +217,36 @@ export const DataManagement = () => {
                             <Input
                                 value={editFormData.telegramChatId}
                                 onChange={(e) => setEditFormData({ ...editFormData, telegramChatId: e.target.value })}
-                                placeholder="e.g. -1001234567890"
+                                placeholder="Group / Chat ID"
                             />
+                            <div className="flex justify-end pt-1">
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    type="button"
+                                    disabled={!editFormData.telegramBotToken}
+                                    onClick={async () => {
+                                        try {
+                                            const res = await axios.post(`${API_URL}/company/telegram/get-id`, {
+                                                token: editFormData.telegramBotToken
+                                            }, config);
+
+                                            if (res.data.chatId) {
+                                                setEditFormData(prev => ({ ...prev, telegramChatId: res.data.chatId }));
+                                                alert("Found Chat ID! Saved to form.");
+                                            }
+                                        } catch (e: any) {
+                                            const msg = e.response?.data?.error || "Could not find Chat ID. Make sure you sent a message to the bot first!";
+                                            alert(msg);
+                                        }
+                                    }}
+                                >
+                                    Check & Auto-Fill Chat ID
+                                </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                To auto-fill: <b>1.</b> Add Bot to Group (or start chat). <b>2.</b> Send any message. <b>3.</b> Click button.
+                            </p>
                         </div>
 
                         <Button onClick={updateCompany}>Save Changes</Button>
