@@ -46,16 +46,32 @@ export const exportToGoogleSheet = async (company: { googleSheetId?: string | nu
                 await sheet.setHeaderRow(['Name', 'Email', 'Phone', 'Date', 'Summary', 'Score']);
             }
 
-            await sheet.addRow({
-                Name: leadData.name || "Anonymous",
-                Email: leadData.email || "N/A",
-                Phone: leadData.phone || "N/A",
-                Date: new Date().toISOString(),
-                Summary: summary,
-                Score: score
-            });
+            // Upsert Logic: Check if row with this email exists
+            const rows = await sheet.getRows();
+            const existingRow = leadData.email ? rows.find(row => row.get('Email') === leadData.email) : null;
 
-            console.log("Exported to Google Sheet successfully");
+            if (existingRow) {
+                console.log("Found existing row for", leadData.email, "- Updating...");
+                existingRow.set('Name', leadData.name || existingRow.get('Name'));
+                existingRow.set('Phone', leadData.phone || existingRow.get('Phone'));
+                // Only update summary/score if they are not the placeholder defaults, or if we want to overwrite
+                if (summary && summary !== "Pending") existingRow.set('Summary', summary);
+                if (score && score !== "Pending") existingRow.set('Score', score);
+                await existingRow.save();
+                console.log("Row updated successfully");
+            } else {
+                console.log("No existing row found. Appending new row...");
+                await sheet.addRow({
+                    Name: leadData.name || "Anonymous",
+                    Email: leadData.email || "N/A",
+                    Phone: leadData.phone || "N/A",
+                    Date: new Date().toISOString(),
+                    Summary: summary || "Pending",
+                    Score: score || "Pending"
+                });
+                console.log("Row added successfully");
+            }
+
             return true;
         } catch (sheetErr: any) {
             console.error("Google Sheet Export ERROR DETAILS:", sheetErr.message);

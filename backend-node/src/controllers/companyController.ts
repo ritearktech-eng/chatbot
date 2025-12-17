@@ -77,6 +77,13 @@ export const createLead = async (req: Request, res: Response) => {
             }
         });
 
+        // Auto-Export to Google Sheet (Async - don't block response)
+        const company = await prisma.company.findUnique({ where: { id: companyId } });
+        if (company) {
+            exportToGoogleSheet(company, { name, email, phone }, "Pending", "Pending")
+                .catch(err => console.error("Auto-export failed:", err));
+        }
+
         res.status(201).json(lead);
     } catch (error) {
         console.error("Error creating lead:", error);

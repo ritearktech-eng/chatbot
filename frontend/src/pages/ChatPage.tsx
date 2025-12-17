@@ -310,6 +310,34 @@ export function ChatPage() {
         return () => clearTimeout(timer);
     }, [messages, selectedCompanyId, leadStep]);
 
+    // Handle Tab Close / Navigation
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (selectedCompanyId && messages.length >= 2) {
+                const token = localStorage.getItem("token");
+                const payload = {
+                    companyId: selectedCompanyId,
+                    history: messages.map(m => ({ role: m.role, content: m.content })),
+                    leadData: leadData
+                };
+
+                // Use fetch with keepalive for reliable background request
+                fetch(`${API_URL}/company/end-session`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload),
+                    keepalive: true
+                }).catch(err => console.error("Exit save failed", err));
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [selectedCompanyId, messages, leadData]);
+
     return (
         <div className="h-[calc(100vh-120px)] flex flex-col max-w-4xl mx-auto space-y-4">
             {/* Company Selector (Simple) */}
