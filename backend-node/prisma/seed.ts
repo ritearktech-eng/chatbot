@@ -8,14 +8,12 @@ async function main() {
 
     // 1. Clean up existing data (optional, but good for idempotent runs)
     // Be careful with this in production!
-    await prisma.document.deleteMany();
-    await prisma.company.deleteMany();
-    await prisma.user.deleteMany();
-
-    // 2. Create Admin User
+    // 2. Create Admin User (Upsert to avoid duplicates)
     const hashedPassword = await bcrypt.hash('password123', 10);
-    const adminUser = await prisma.user.create({
-        data: {
+    const adminUser = await prisma.user.upsert({
+        where: { email: 'admin@primechatbot.com' },
+        update: {},
+        create: {
             email: 'admin@primechatbot.com',
             password: hashedPassword,
             companies: {
@@ -29,11 +27,6 @@ async function main() {
                                 content: 'Acme Corp is a leading provider of chatbot solutions.',
                                 metadata: { source: 'about.txt' }
                             },
-                            {
-                                type: 'URL',
-                                content: 'https://acmecorp.com/docs',
-                                metadata: { source: 'url', url: 'https://acmecorp.com/docs' }
-                            }
                         ]
                     }
                 }
@@ -48,20 +41,24 @@ async function main() {
         }
     });
 
-    console.log(`✅ Seeded User: ${adminUser.email}`);
-    console.log(`✅ Seeded Company: ${adminUser.companies[0].name}`);
-    console.log(`✅ Seeded ${adminUser.companies[0].documents.length} Documents`);
+    console.log(`✅ Seeded/Verified User: ${adminUser.email}`);
+    // Only log company if we have it loaded (upsert might not return it if not updated)
+    if (adminUser.companies && adminUser.companies[0]) {
+        console.log(`✅ Seeded/Verified Company: ${adminUser.companies[0].name}`);
+    }
 
-    // 3. Create Super Admin
+    // 3. Create Super Admin (Upsert)
     const superAdminPassword = await bcrypt.hash('password123', 10);
-    const superAdmin = await prisma.user.create({
-        data: {
+    const superAdmin = await prisma.user.upsert({
+        where: { email: 'superadmin@primechatbot.com' },
+        update: { role: 'SUPER_ADMIN' }, // Ensure role is set correctly even if exists
+        create: {
             email: 'superadmin@primechatbot.com',
             password: superAdminPassword,
             role: 'SUPER_ADMIN'
         }
     });
-    console.log(`✅ Seeded Super Admin: ${superAdmin.email}`);
+    console.log(`✅ Seeded/Verified Super Admin: ${superAdmin.email}`);
 }
 
 main()
