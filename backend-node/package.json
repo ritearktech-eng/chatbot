@@ -4,7 +4,7 @@
   "description": "Main API Server for Chatbot Builder",
   "main": "src/index.ts",
   "scripts": {
-    "start": "npx prisma db push && node dist/index.js",
+    "start": "npx prisma db push && npx prisma db seed && node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && tsc",
     "prisma:generate": "prisma generate",
