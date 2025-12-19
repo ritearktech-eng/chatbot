@@ -22,12 +22,27 @@ app.use((req, res, next) => {
     next();
 });
 
+import * as companyController from './controllers/companyController';
+import * as analyticsController from './controllers/analyticsController';
+import * as authController from './controllers/authController';
+import { authenticate as authMiddleware } from './middleware/authMiddleware';
+
 import chatRoutes from './routes/chatRoutes';
 import path from 'path';
 
 // Routes
-app.use('/auth', authRoutes);
-app.use('/company', companyRoutes);
+app.post('/auth/register', authController.register);
+app.post('/auth/login', authController.login);
+
+app.get('/company/list', authMiddleware, companyController.getCompanies);
+app.post('/company/create', authMiddleware, companyController.createCompany);
+app.patch('/company/:id', authMiddleware, companyController.updateCompany);
+app.post('/company/upload', authMiddleware, companyController.uploadData);
+app.patch('/super-admin/company/:id/status', authMiddleware, companyController.updateCompanyStatus);
+// New Analytics Routes
+app.post('/company/:companyId/message', analyticsController.incrementMessageCount);
+app.get('/super-admin/stats', authMiddleware, analyticsController.getDashboardStats);
+
 app.use('/chat', chatRoutes);
 
 // Serve widget static file

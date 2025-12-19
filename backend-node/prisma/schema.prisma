@@ -19,6 +19,8 @@ model User {
   // currently requirements say "Admin can upload different company data"
   // so we assume standard SaaS model where user owns companies.
   companies Company[]
+  
+  role      String   @default("USER") // SUPER_ADMIN, USER
 }
 
 model Company {
@@ -26,6 +28,10 @@ model Company {
   name            String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  
+  status          String   @default("PENDING") // PENDING, ACTIVE, REJECTED
+  messageCount    Int      @default(0)
+
   userId          String
   user            User     @relation(fields: [userId], references: [id])
   

@@ -76,6 +76,19 @@ Context:
     except Exception as e:
         print(f"Error generating chat: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        # Increment message count (Fire and forget, or use BackgroundTasks if passed)
+        # Using simple approach here for now - standard requests or httpx
+        try:
+            import httpx
+            # Assuming Node backend is on port 3000
+            url = f"http://localhost:3000/company/{req.companyId}/message"
+            # We want this to be non-blocking ideally, but for MVP sync/simple async is okay
+            # Since this is an async function, we can await httpx.AsyncClient
+            async with httpx.AsyncClient() as client:
+                await client.post(url)
+        except Exception as stats_err:
+            print(f"Failed to update stats: {stats_err}")
 
 class SummarizeRequest(BaseModel):
     history: List[dict]

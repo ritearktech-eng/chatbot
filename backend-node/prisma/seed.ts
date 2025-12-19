@@ -51,6 +51,17 @@ async function main() {
     console.log(`✅ Seeded User: ${adminUser.email}`);
     console.log(`✅ Seeded Company: ${adminUser.companies[0].name}`);
     console.log(`✅ Seeded ${adminUser.companies[0].documents.length} Documents`);
+
+    // 3. Create Super Admin
+    const superAdminPassword = await bcrypt.hash('password123', 10);
+    const superAdmin = await prisma.user.create({
+        data: {
+            email: 'superadmin@primechatbot.com',
+            password: superAdminPassword,
+            role: 'SUPER_ADMIN'
+        }
+    });
+    console.log(`✅ Seeded Super Admin: ${superAdmin.email}`);
 }
 
 main()

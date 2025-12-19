@@ -10,6 +10,7 @@ interface Company {
     id: string;
     name: string;
     _count?: { documents: number };
+    status?: 'PENDING' | 'ACTIVE' | 'REJECTED';
 }
 
 export function CompaniesDashboard() {
@@ -87,26 +88,37 @@ export function CompaniesDashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1">
-                                <div className="space-y-2">
-                                    <div className="text-sm text-muted-foreground">
-                                        Chatbot Status: <span className="text-green-600 font-medium">Active</span>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-muted-foreground">Status:</span>
+                                        <span className={`font-medium px-2 py-0.5 rounded text-xs ${(company.status || 'PENDING') === 'ACTIVE' ? 'bg-green-100 text-green-700' :
+                                            (company.status || 'PENDING') === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                                                'bg-orange-100 text-orange-700'
+                                            }`}>
+                                            {(company.status || 'PENDING') === 'PENDING' ? 'Waiting for Approval' : (company.status || 'PENDING')}
+                                        </span>
                                     </div>
+                                    {(company.status || 'PENDING') === 'PENDING' && (
+                                        <div className="bg-orange-50 border border-orange-100 p-2 rounded text-xs text-orange-800">
+                                            Pending: Waiting for Super Admin permission.
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                             <div className="flex gap-2 justify-between border-t p-4 bg-muted/20">
                                 <div className="flex gap-2">
                                     <Link to={`/dashboard/chat`}>
-                                        <Button variant="outline" size="sm" title="Test Chat">
+                                        <Button variant="outline" size="sm" title="Test Chat" disabled={(company.status || 'PENDING') !== 'ACTIVE'}>
                                             <MessageSquare className="h-4 w-4" />
                                         </Button>
                                     </Link>
                                     <Link to={`/dashboard/data`}>
-                                        <Button variant="outline" size="sm" title="Manage Data">
+                                        <Button variant="outline" size="sm" title="Manage Data" disabled={(company.status || 'PENDING') !== 'ACTIVE'}>
                                             <Database className="h-4 w-4" />
                                         </Button>
                                     </Link>
                                     <Link to={`/dashboard/company/${company.id}/leads`}>
-                                        <Button variant="default" size="sm" title="View Leads">
+                                        <Button variant="default" size="sm" title="View Leads" disabled={(company.status || 'PENDING') !== 'ACTIVE'}>
                                             <Users className="h-4 w-4 mr-1" /> Leads
                                         </Button>
                                     </Link>

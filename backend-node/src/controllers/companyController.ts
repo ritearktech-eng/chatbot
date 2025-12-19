@@ -164,7 +164,8 @@ export const getCompanies = async (req: Request, res: Response) => {
         const userId = (req as any).user.userId;
         const companies = await prisma.company.findMany({
             where: { userId },
-            include: { _count: { select: { documents: true } } }
+            include: { _count: { select: { documents: true } } },
+            orderBy: { createdAt: 'desc' }
         });
         res.json(companies);
     } catch (error) {
@@ -183,6 +184,23 @@ export const deleteCompany = async (req: Request, res: Response) => {
         res.json({ message: 'Deleted' });
     } catch (error) {
         res.status(500).json({ error: 'Delete failed' });
+    }
+};
+
+export const updateCompanyStatus = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // ACTIVE, REJECTED, PENDING
+
+        await prisma.company.update({
+            where: { id },
+            data: { status }
+        });
+
+        res.json({ message: `Company status updated to ${status}` });
+    } catch (error) {
+        console.error("Status update error:", error);
+        res.status(500).json({ error: 'Failed to update status' });
     }
 };
 

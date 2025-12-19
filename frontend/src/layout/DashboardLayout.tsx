@@ -17,7 +17,7 @@ export const DashboardLayout = () => {
         { href: "/dashboard/companies", icon: Building2, label: "Companies" },
         { href: "/dashboard/chat", icon: MessageSquare, label: "Chatbot" },
         { href: "/dashboard/data", icon: Database, label: "Knowledge Base" },
-        { href: "/dashboard/api", icon: Settings, label: "Settings" },
+        { href: "/dashboard/settings", icon: Settings, label: "Settings" },
     ];
 
     return (

@@ -4,11 +4,13 @@ import { AuthPage } from "./pages/Auth";
 import { DashboardLayout } from "./layout/DashboardLayout";
 import { DashboardHome } from "./pages/DashboardHome";
 import { DataManagement } from "./pages/DataManagement";
-import { ApiConfig } from "./pages/ApiConfig";
+import { SettingsPage } from "./pages/Settings";
 import { ChatPage } from "./pages/ChatPage";
 import { CreateCompany } from "./pages/CreateCompany";
 import { CompaniesDashboard } from "./pages/CompaniesDashboard";
 import { CompanyLeads } from "./pages/CompanyLeads";
+import { SuperAdminAuth } from "./pages/SuperAdminAuth";
+import { SuperAdminDashboard } from "./pages/SuperAdminDashboard";
 import { EmbedChat } from "./pages/EmbedChat";
 
 function App() {
@@ -34,11 +36,19 @@ function App() {
           <Route index element={<DashboardHome />} />
           <Route path="chat" element={<ChatPage />} />
           <Route path="data" element={<DataManagement />} />
-          <Route path="api" element={<ApiConfig />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="company/new" element={<CreateCompany />} />
           <Route path="companies" element={<CompaniesDashboard />} />
           <Route path="company/:companyId/leads" element={<CompanyLeads />} />
         </Route>
+
+        {/* Super Admin Routes */}
+        <Route path="/admin" element={<SuperAdminAuth />} />
+        <Route path="/super-dashboard" element={
+          <PrivateRoute>
+            <SuperAdminDashboard />
+          </PrivateRoute>
+        } />
 
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
