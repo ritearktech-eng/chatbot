@@ -31,6 +31,7 @@ A full-stack SaaS platform for building custom AI chatbots.
 ## 🛠 Usage Guide
 
 ### 1. Login / Register
+- **Super Admin**: `superadmin@primechatbot.com` / `password123` (Login at `/admin`).
 - **Default Admin**: `admin@primechatbot.com` / `password123` (if database seeded).
 - **Register**: You can also create a new account via the "Register" link on the login page.
 
