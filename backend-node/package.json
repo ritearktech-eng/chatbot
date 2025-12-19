@@ -33,15 +33,15 @@
     "pdf-parse": "^1.1.1",
     "uuid": "^13.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.11.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.11.0",
     "@types/pdf-parse": "^1.1.5",
     "nodemon": "^3.0.0",
     "prisma": "^5.10.0"
