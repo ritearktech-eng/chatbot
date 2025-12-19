@@ -4,15 +4,15 @@
   "description": "Main API Server for Chatbot Builder",
   "main": "src/index.ts",
   "scripts": {
-    "start": "npx prisma db push && npx prisma db seed && node dist/index.js",
+    "start": "npx prisma db push && npx prisma db seed && node dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && tsc",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "node dist/prisma/seed.js"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node dist/prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",

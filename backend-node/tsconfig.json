@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2016",
         "module": "commonjs",
-        "rootDir": "./src",
+        "rootDir": "./",
         "outDir": "./dist",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
@@ -10,10 +10,10 @@
         "skipLibCheck": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "prisma/**/*"
     ],
     "exclude": [
-        "prisma/**/*",
         "test_stale_token.ts",
         "node_modules",
         "dist"
