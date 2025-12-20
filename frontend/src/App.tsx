@@ -12,6 +12,10 @@ import { CompanyLeads } from "./pages/CompanyLeads";
 import { SuperAdminAuth } from "./pages/SuperAdminAuth";
 import { SuperAdminDashboard } from "./pages/SuperAdminDashboard";
 import { EmbedChat } from "./pages/EmbedChat";
+import { SuperAdminLayout } from "./layout/SuperAdminLayout";
+import { SuperAdminUsers } from "./pages/SuperAdminUsers";
+import { SuperAdminUserDetails } from "./pages/SuperAdminUserDetails";
+import { SuperAdminCompanyDetails } from "./pages/SuperAdminCompanyDetails";
 
 function App() {
   const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -44,11 +48,24 @@ function App() {
 
         {/* Super Admin Routes */}
         <Route path="/admin" element={<SuperAdminAuth />} />
+
         <Route path="/super-dashboard" element={
           <PrivateRoute>
-            <SuperAdminDashboard />
+            <SuperAdminLayout />
           </PrivateRoute>
-        } />
+        }>
+          <Route index element={<SuperAdminDashboard />} />
+        </Route>
+
+        <Route path="/super-admin" element={
+          <PrivateRoute>
+            <SuperAdminLayout />
+          </PrivateRoute>
+        }>
+          <Route path="users" element={<SuperAdminUsers />} />
+          <Route path="users/:userId" element={<SuperAdminUserDetails />} />
+          <Route path="company/:companyId" element={<SuperAdminCompanyDetails />} />
+        </Route>
 
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>

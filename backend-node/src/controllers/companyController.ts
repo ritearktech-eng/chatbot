@@ -382,3 +382,31 @@ export const exportLeadToSheet = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+export const getCompanyFullDetails = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const company = await prisma.company.findUnique({
+            where: { id },
+            include: {
+                apiKeys: true,
+                _count: {
+                    select: { documents: true }
+                },
+                usageLogs: {
+                    orderBy: { timestamp: 'desc' },
+                    take: 10
+                }
+            }
+        });
+
+        if (!company) {
+            return res.status(404).json({ error: 'Company not found' });
+        }
+
+        res.json(company);
+    } catch (error) {
+        console.error("Error fetching full company details:", error);
+        res.status(500).json({ error: 'Failed to fetch company details' });
+    }
+};

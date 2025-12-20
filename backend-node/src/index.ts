@@ -25,6 +25,7 @@ app.use((req, res, next) => {
 import * as companyController from './controllers/companyController';
 import * as analyticsController from './controllers/analyticsController';
 import * as authController from './controllers/authController';
+import * as userController from './controllers/userController';
 import { authenticate as authMiddleware } from './middleware/authMiddleware';
 
 import chatRoutes from './routes/chatRoutes';
@@ -42,6 +43,10 @@ app.patch('/super-admin/company/:id/status', authMiddleware, companyController.u
 // New Analytics Routes
 app.post('/company/:companyId/message', analyticsController.incrementMessageCount);
 app.get('/super-admin/stats', authMiddleware, analyticsController.getDashboardStats);
+// User Management Routes
+app.get('/super-admin/users', authMiddleware, userController.getAllUsers);
+app.get('/super-admin/users/:id', authMiddleware, userController.getUserDetails);
+app.get('/super-admin/company/:id/full', authMiddleware, companyController.getCompanyFullDetails);
 
 app.use('/chat', chatRoutes);
 
