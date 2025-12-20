@@ -15,6 +15,13 @@ router.post('/:companyId', async (req, res) => {
             return res.status(404).json({ error: 'Company not found' });
         }
 
+        if (company.status !== 'ACTIVE') {
+            return res.status(403).json({
+                error: 'Subscription inactive. Please contact billing.',
+                code: 'COMPANY_INACTIVE'
+            });
+        }
+
         // Call AI Service
         const aiResponse = await generateChatResponse({
             companyId: company.vectorNamespace, // Use namespace

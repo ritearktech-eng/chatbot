@@ -93,6 +93,24 @@ export const SuperAdminCompanyDetails = () => {
         }
     };
 
+    const handleStatusToggle = async () => {
+        if (!company) return;
+        const newStatus = company.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        if (!confirm(`Are you sure you want to mark this company as ${newStatus}?`)) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            await axios.patch(`${API_URL}/super-admin/company/${companyId}/status`, { status: newStatus }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchCompanyDetails();
+            alert(`Company marked as ${newStatus}`);
+        } catch (error) {
+            console.error("Failed to update status", error);
+            alert("Failed to update status");
+        }
+    };
+
     if (loading) return <div className="p-8 text-center text-slate-500">Loading company data...</div>;
     if (!company) return <div className="p-8 text-center text-red-500">Company not found</div>;
 
@@ -116,9 +134,18 @@ export const SuperAdminCompanyDetails = () => {
                     </div>
                 </div>
                 {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} className="gap-2">
-                        <Edit2 className="w-4 h-4" /> Edit Configuration
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            variant={company.status === 'ACTIVE' ? "destructive" : "default"}
+                            className={company.status === 'ACTIVE' ? "" : "bg-green-600 hover:bg-green-700"}
+                            onClick={handleStatusToggle}
+                        >
+                            {company.status === 'ACTIVE' ? "Deactivate Bot" : "Activate Bot"}
+                        </Button>
+                        <Button onClick={() => setIsEditing(true)} className="gap-2">
+                            <Edit2 className="w-4 h-4" /> Edit Configuration
+                        </Button>
+                    </div>
                 ) : (
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={handleCancel} className="gap-2">
