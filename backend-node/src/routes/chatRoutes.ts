@@ -22,6 +22,14 @@ router.post('/:companyId', async (req, res) => {
             });
         }
 
+        // Check Message Limit
+        if (company.messageCount >= company.messageLimit) {
+            return res.status(403).json({
+                error: 'Free trial message limit reached. Please contact support to upgrade.',
+                code: 'LIMIT_REACHED'
+            });
+        }
+
         // Call AI Service
         const aiResponse = await generateChatResponse({
             companyId: company.vectorNamespace, // Use namespace

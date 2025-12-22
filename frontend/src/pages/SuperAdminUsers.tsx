@@ -15,6 +15,7 @@ interface User {
     _count: {
         companies: number;
     };
+    totalMessages: number;
 }
 
 export const SuperAdminUsers = () => {
@@ -80,6 +81,7 @@ export const SuperAdminUsers = () => {
                                         <th className="px-6 py-3">User</th>
                                         <th className="px-6 py-3">Role</th>
                                         <th className="px-6 py-3">Companies</th>
+                                        <th className="px-6 py-3">Messages Received</th>
                                         <th className="px-6 py-3">Joined On</th>
                                         <th className="px-6 py-3">Action</th>
                                     </tr>
@@ -107,6 +109,11 @@ export const SuperAdminUsers = () => {
                                             <td className="px-6 py-4">
                                                 <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-bold">
                                                     {user._count.companies} Bots
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs font-bold">
+                                                    {user.totalMessages}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-slate-500">

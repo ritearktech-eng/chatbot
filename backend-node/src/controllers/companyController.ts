@@ -67,7 +67,11 @@ export const updateCompany = async (req: Request, res: Response) => {
         if (greetingMessage !== undefined) dataToUpdate.greetingMessage = greetingMessage;
         if (googleSheetId !== undefined) dataToUpdate.googleSheetId = googleSheetId;
         if (telegramBotToken !== undefined) dataToUpdate.telegramBotToken = telegramBotToken;
+        if (googleSheetId !== undefined) dataToUpdate.googleSheetId = googleSheetId;
+        if (telegramBotToken !== undefined) dataToUpdate.telegramBotToken = telegramBotToken;
         if (telegramChatId !== undefined) dataToUpdate.telegramChatId = telegramChatId;
+        // Super Admin field
+        if (req.body.messageLimit !== undefined) dataToUpdate.messageLimit = parseInt(req.body.messageLimit);
 
         const company = await prisma.company.update({
             where: { id },

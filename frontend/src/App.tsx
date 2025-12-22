@@ -27,7 +27,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<Navigate to="/login" />} />
+        <Route path="/register" element={<AuthPage isRegister={true} />} />
 
         {/* Public Embed Route */}
         <Route path="/embed/:companyId" element={<EmbedChat />} />

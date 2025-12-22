@@ -21,6 +21,8 @@ model User {
   companies Company[]
   
   role      String   @default("USER") // SUPER_ADMIN, USER
+  phone     String?
+  referralSource String?
 }
 
 model Company {
@@ -31,6 +33,7 @@ model Company {
   
   status          String   @default("PENDING") // PENDING, ACTIVE, REJECTED
   messageCount    Int      @default(0)
+  messageLimit    Int      @default(100)
 
   userId          String
   user            User     @relation(fields: [userId], references: [id])

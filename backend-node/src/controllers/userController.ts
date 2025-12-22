@@ -11,12 +11,27 @@ export const getAllUsers = async (req: Request, res: Response) => {
                 email: true,
                 role: true,
                 createdAt: true,
+                companies: {
+                    select: {
+                        messageCount: true
+                    }
+                },
                 _count: {
                     select: { companies: true }
                 }
             }
         });
-        res.json(users);
+
+        const usersWithStats = users.map(user => ({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            createdAt: user.createdAt,
+            _count: user._count,
+            totalMessages: user.companies.reduce((sum, company) => sum + company.messageCount, 0)
+        }));
+
+        res.json(usersWithStats);
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });

@@ -23,6 +23,8 @@ interface CompanyFull {
     apiKeys: { id: string; key: string; createdAt: string }[];
     _count: { documents: number };
     usageLogs: { id: string; tokens: number; timestamp: string }[];
+    messageCount: number;
+    messageLimit: number;
 }
 
 export const SuperAdminCompanyDetails = () => {
@@ -36,7 +38,8 @@ export const SuperAdminCompanyDetails = () => {
         greetingMessage: '',
         googleSheetId: '',
         telegramBotToken: '',
-        telegramChatId: ''
+        telegramChatId: '',
+        messageLimit: 100
     });
 
     useEffect(() => {
@@ -55,7 +58,8 @@ export const SuperAdminCompanyDetails = () => {
                 greetingMessage: res.data.greetingMessage || '',
                 googleSheetId: res.data.googleSheetId || '',
                 telegramBotToken: res.data.telegramBotToken || '',
-                telegramChatId: res.data.telegramChatId || ''
+                telegramChatId: res.data.telegramChatId || '',
+                messageLimit: res.data.messageLimit || 100
             });
         } catch (error) {
             console.error("Failed to fetch company details", error);
@@ -88,7 +92,8 @@ export const SuperAdminCompanyDetails = () => {
                 greetingMessage: company.greetingMessage || '',
                 googleSheetId: company.googleSheetId || '',
                 telegramBotToken: company.telegramBotToken || '',
-                telegramChatId: company.telegramChatId || ''
+                telegramChatId: company.telegramChatId || '',
+                messageLimit: company.messageLimit || 100
             });
         }
     };
@@ -296,6 +301,19 @@ export const SuperAdminCompanyDetails = () => {
                             <div className="p-4 bg-indigo-50 rounded-lg text-center">
                                 <div className="text-2xl font-bold text-indigo-700">{company.vectorNamespace ? "Ready" : "Error"}</div>
                                 <div className="text-xs text-indigo-600">Vector Store Status</div>
+                            </div>
+                            <div className="p-4 bg-orange-50 rounded-lg text-center col-span-2">
+                                <div className="text-2xl font-bold text-orange-700">
+                                    {company.messageCount} / {isEditing ? (
+                                        <Input
+                                            type="number"
+                                            className="w-24 inline-block h-8 text-center bg-white border-orange-200"
+                                            value={formData.messageLimit}
+                                            onChange={(e) => setFormData({ ...formData, messageLimit: parseInt(e.target.value) || 0 })}
+                                        />
+                                    ) : company.messageLimit}
+                                </div>
+                                <div className="text-xs text-orange-600">Messages Used / Limit</div>
                             </div>
                         </div>
 
