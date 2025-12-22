@@ -16,7 +16,7 @@ export const SuperAdminLayout = () => {
             <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col">
                 <div className="p-6 border-b border-slate-700">
                     <div className="flex items-center gap-2">
-                        <span className="font-bold text-xl text-white">PrimeSuper</span>
+                        <span className="font-bold text-xl text-white">RiteArkSuper</span>
                         <span className="text-[10px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-medium">ADMIN</span>
                     </div>
                 </div>
