@@ -27,9 +27,9 @@ export const DashboardLayout = () => {
                 <div className="p-6">
                     <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                            <span className="text-primary font-bold">P</span>
+                            <span className="text-primary font-bold">R</span>
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight">Prime<span className="text-primary">Chat</span></h1>
+                        <h1 className="text-xl font-bold tracking-tight">Riteark<span className="text-primary">Chat</span></h1>
                     </div>
                 </div>
 

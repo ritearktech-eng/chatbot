@@ -47,6 +47,20 @@ export const SuperAdminDashboard = () => {
         }
     };
 
+    const handleStatusUpdate = async (id: string, status: 'ACTIVE' | 'REJECTED') => {
+        if (!confirm(`Are you sure you want to mark this company as ${status}?`)) return;
+        try {
+            const token = localStorage.getItem("token");
+            await axios.patch(`${API_URL}/super-admin/company/${id}/status`, { status }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert(`Company marked as ${status}`);
+            fetchStats(); // Refresh list
+        } catch (err) {
+            alert("Failed to update status");
+        }
+    };
+
     if (loading) {
         return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-slate-400">Loading dashboard...</div>;
     }
@@ -220,10 +234,23 @@ export const SuperAdminDashboard = () => {
                                         <td className="px-4 py-4">{assistant.calls}</td>
                                         <td className="px-4 py-4">{assistant.leads}</td>
                                         <td className="px-4 py-4">
-                                            <span className={`flex items-center gap-1.5 ${assistant.status === 'ACTIVE' ? 'text-green-400' : 'text-slate-400'}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${assistant.status === 'ACTIVE' ? 'bg-green-400' : 'bg-slate-400'}`}></span>
-                                                {assistant.status}
-                                            </span>
+                                            {assistant.status === 'PENDING' ? (
+                                                <div className="flex gap-2">
+                                                    <Button size="sm" className="bg-green-600 hover:bg-green-700 h-6 text-xs px-2"
+                                                        onClick={() => handleStatusUpdate(assistant.id, 'ACTIVE')}>
+                                                        Approve
+                                                    </Button>
+                                                    <Button size="sm" variant="destructive" className="h-6 text-xs px-2"
+                                                        onClick={() => handleStatusUpdate(assistant.id, 'REJECTED')}>
+                                                        Reject
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <span className={`flex items-center gap-1.5 ${assistant.status === 'ACTIVE' ? 'text-green-400' : 'text-slate-400'}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${assistant.status === 'ACTIVE' ? 'bg-green-400' : 'bg-slate-400'}`}></span>
+                                                    {assistant.status}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-4 py-4 text-slate-500">
                                             {new Date(assistant.updatedAt).toLocaleString()}

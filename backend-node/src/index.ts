@@ -35,10 +35,10 @@ import path from 'path';
 app.post('/auth/register', authController.register);
 app.post('/auth/login', authController.login);
 
-app.get('/company/list', authMiddleware, companyController.getCompanies);
-app.post('/company/create', authMiddleware, companyController.createCompany);
-app.patch('/company/:id', authMiddleware, companyController.updateCompany);
-app.post('/company/upload', authMiddleware, companyController.uploadData);
+app.post('/auth/login', authController.login);
+
+app.use('/company', companyRoutes);
+
 app.patch('/super-admin/company/:id/status', authMiddleware, companyController.updateCompanyStatus);
 // New Analytics Routes
 app.post('/company/:companyId/message', analyticsController.incrementMessageCount);
