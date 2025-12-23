@@ -83,31 +83,59 @@ export function EmbedChat() {
                 let nextStep: "INIT" | "ASK_NAME" | "ASK_EMAIL" | "ASK_PHONE" | "COMPLETED" = leadStep;
 
                 if (leadStep === "ASK_NAME") {
-                    setLeadData(prev => ({ ...prev, name: userContent }));
-                    nextMessage = "Nice to meet you! What is your email address?";
-                    nextStep = "ASK_EMAIL";
+                    console.log("Validating Name:", userContent);
+                    if (userContent.length < 3) {
+                        nextMessage = "Name is too short. Please enter at least 3 characters.";
+                        nextStep = "ASK_NAME";
+                    } else {
+                        setLeadData(prev => ({ ...prev, name: userContent }));
+                        nextMessage = "Nice to meet you! What is your email address?";
+                        nextStep = "ASK_EMAIL";
+                    }
                 } else if (leadStep === "ASK_EMAIL") {
-                    setLeadData(prev => ({ ...prev, email: userContent }));
-                    nextMessage = "Thanks! Lastly, what is your phone number?";
-                    nextStep = "ASK_PHONE";
+                    console.log("Validating Email:", userContent);
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(userContent)) {
+                        nextMessage = "Invalid Email Format. Please enter a valid email (e.g., user@domain.com).";
+                        nextStep = "ASK_EMAIL";
+                    } else {
+                        setLeadData(prev => ({ ...prev, email: userContent }));
+                        nextMessage = "Thanks! Lastly, what is your phone number?";
+                        nextStep = "ASK_PHONE";
+                    }
                 } else if (leadStep === "ASK_PHONE") {
-                    const finalData = { ...leadData, phone: userContent };
-                    setLeadData(finalData);
+                    console.log("Validating Phone:", userContent);
+                    // UAE Phone Validation: Starts with +971, 00971, or 0, followed by valid mobile/landline digits
+                    // Common prefixes: 50, 51, 52, 54, 55, 56, 58 (mobile), 2, 3, 4, 6, 7, 9 (landline)
+                    // Total length usually 9-10 digits excluding country code, but +971501234567 is 13 chars.
+                    // Simplified: Must start with +971, 00971, or 0.
+                    // Regex: /^(?:\+971|00971|0)(?:5\d|2|3|4|6|7|9)\d{7}$/
+                    // Actually, let's keep it slightly flexible but ensure it starts correct.
+                    const cleanPhone = userContent.replace(/[\s-]/g, '');
+                    const uaeRegex = /^(?:\+971|00971|0)(?:5\d|2|3|4|6|7|9)\d{7}$/;
 
-                    // Submit to Backend (Public Endpoint)
-                    try {
-                        await fetch(`${API_URL}/company/lead`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ companyId, ...finalData })
-                        });
-                        nextMessage = "Thank you! I've saved your details. How can I help you today?";
-                        nextStep = "COMPLETED";
-                        sessionStorage.setItem(`lead_data_${companyId}`, JSON.stringify(finalData));
-                    } catch (e) {
-                        console.error("Failed to save lead", e);
-                        nextMessage = "Thanks. How can I help you today?";
-                        nextStep = "COMPLETED";
+                    if (!uaeRegex.test(cleanPhone)) {
+                        nextMessage = "Invalid UAE Number. Must start with 05x, 02x, 03x, 04x, 06x, 07x, 09x or +971...";
+                        nextStep = "ASK_PHONE";
+                    } else {
+                        const finalData = { ...leadData, phone: cleanPhone };
+                        setLeadData(finalData);
+
+                        // Submit to Backend (Public Endpoint)
+                        try {
+                            await fetch(`${API_URL}/company/lead`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ companyId, ...finalData })
+                            });
+                            nextMessage = "Thank you! I've saved your details. How can I help you today?";
+                            nextStep = "COMPLETED";
+                            sessionStorage.setItem(`lead_data_${companyId}`, JSON.stringify(finalData));
+                        } catch (e) {
+                            console.error("Failed to save lead", e);
+                            nextMessage = "Thanks. How can I help you today?";
+                            nextStep = "COMPLETED";
+                        }
                     }
                 }
 
