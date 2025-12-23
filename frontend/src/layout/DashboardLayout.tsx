@@ -1,5 +1,6 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SupportChatWidget } from "@/components/SupportChatWidget";
 import { LayoutDashboard, Database, Settings, LogOut, MessageSquare, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -85,6 +86,7 @@ export const DashboardLayout = () => {
                     <Outlet />
                 </div>
             </main>
+            <SupportChatWidget />
         </div>
     );
 };

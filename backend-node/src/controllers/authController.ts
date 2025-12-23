@@ -4,10 +4,15 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import prisma from '../utils/prisma';
+import { verifyCaptcha } from './captchaController';
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { email, password, phone, referralSource, companyName } = req.body;
+        const { email, password, phone, referralSource, companyName, captchaToken, captchaValue } = req.body;
+
+        if (!verifyCaptcha(captchaToken, captchaValue)) {
+            return res.status(400).json({ error: 'Invalid CAPTCHA' });
+        }
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
@@ -59,7 +64,11 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, captchaToken, captchaValue } = req.body;
+
+        if (!verifyCaptcha(captchaToken, captchaValue)) {
+            return res.status(400).json({ error: 'Invalid CAPTCHA' });
+        }
 
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {

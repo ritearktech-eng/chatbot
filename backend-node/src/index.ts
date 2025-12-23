@@ -32,10 +32,7 @@ import chatRoutes from './routes/chatRoutes';
 import path from 'path';
 
 // Routes
-app.post('/auth/register', authController.register);
-app.post('/auth/login', authController.login);
-
-app.post('/auth/login', authController.login);
+app.use('/auth', authRoutes);
 
 app.use('/company', companyRoutes);
 

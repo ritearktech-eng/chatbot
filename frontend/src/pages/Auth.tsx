@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { CaptchaInput } from "../components/CaptchaInput";
 import { API_URL } from "../config";
 
 const authSchema = z.object({
@@ -32,9 +33,14 @@ type AuthFormData = z.infer<typeof authSchema>;
 export const AuthPage = ({ isRegister = false }) => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
+    const [captcha, setCaptcha] = useState({ token: "", value: "" });
     const { register, handleSubmit, formState: { errors } } = useForm<AuthFormData>({
         resolver: zodResolver(authSchema),
     });
+
+    const handleCaptchaChange = (token: string, value: string) => {
+        setCaptcha({ token, value });
+    };
 
     const onSubmit = async (data: AuthFormData) => {
         if (isRegister && data.password !== data.confirmPassword) {
@@ -47,7 +53,11 @@ export const AuthPage = ({ isRegister = false }) => {
             // Filter out confirmPassword before sending
             const { confirmPassword, ...payload } = data;
 
-            const res = await axios.post(`${API_URL}${endpoint}`, payload);
+            const res = await axios.post(`${API_URL}${endpoint}`, {
+                ...payload,
+                captchaToken: captcha.token,
+                captchaValue: captcha.value
+            });
             localStorage.setItem("token", res.data.token);
             navigate("/dashboard");
         } catch (err: any) {
@@ -99,6 +109,11 @@ export const AuthPage = ({ isRegister = false }) => {
                                 {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
                             </div>
                         )}
+
+                        <div className="space-y-2">
+                            <Label>Security Check</Label>
+                            <CaptchaInput onCaptchaChange={handleCaptchaChange} />
+                        </div>
 
                         {error && <div className="text-red-500 text-sm">{error}</div>}
                         <Button type="submit" className="w-full">

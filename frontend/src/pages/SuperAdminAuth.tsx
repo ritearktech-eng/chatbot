@@ -9,6 +9,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { ShieldCheck } from "lucide-react";
+import { CaptchaInput } from "../components/CaptchaInput";
 import { API_URL } from "../config";
 
 const authSchema = z.object({
@@ -21,13 +22,22 @@ type AuthFormData = z.infer<typeof authSchema>;
 export const SuperAdminAuth = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
+    const [captcha, setCaptcha] = useState({ token: "", value: "" });
     const { register, handleSubmit, formState: { errors } } = useForm<AuthFormData>({
         resolver: zodResolver(authSchema),
     });
 
+    const handleCaptchaChange = (token: string, value: string) => {
+        setCaptcha({ token, value });
+    };
+
     const onSubmit = async (data: AuthFormData) => {
         try {
-            const res = await axios.post(`${API_URL}/auth/login`, data);
+            const res = await axios.post(`${API_URL}/auth/login`, {
+                ...data,
+                captchaToken: captcha.token,
+                captchaValue: captcha.value
+            });
 
             if (res.data.user.role !== "SUPER_ADMIN") {
                 setError("Access Denied. Not a Super Admin.");
@@ -73,6 +83,12 @@ export const SuperAdminAuth = () => {
                             {errors.password && <span className="text-red-400 text-sm">{errors.password.message}</span>}
                         </div>
                         {error && <div className="text-red-400 text-sm bg-red-900/20 p-2 rounded">{error}</div>}
+
+                        <div className="space-y-2">
+                            <Label className="text-slate-300">Security Check</Label>
+                            <CaptchaInput onCaptchaChange={handleCaptchaChange} />
+                        </div>
+
                         <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
                             Secure Login
                         </Button>

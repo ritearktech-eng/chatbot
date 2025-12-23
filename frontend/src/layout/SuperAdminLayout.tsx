@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Users, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { SupportChatWidget } from '../components/SupportChatWidget';
 
 export const SuperAdminLayout = () => {
     const navigate = useNavigate();
@@ -62,6 +63,7 @@ export const SuperAdminLayout = () => {
             <main className="flex-1 overflow-auto">
                 <Outlet />
             </main>
+            <SupportChatWidget />
         </div>
     );
 };
