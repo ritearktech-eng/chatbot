@@ -3,8 +3,7 @@ import axios from "axios";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import {
-    Users, DollarSign, Activity, FileText, Settings, LogOut,
-    BarChart3, PieChart, TrendingUp, MessageSquare, ArrowUpRight, MessageCircle
+    MessageCircle
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
 import { API_URL } from "../config";
