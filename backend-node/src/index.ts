@@ -47,6 +47,7 @@ app.get('/super-admin/stats', authMiddleware, analyticsController.getDashboardSt
 app.get('/super-admin/users', authMiddleware, userController.getAllUsers);
 app.get('/super-admin/users/:id', authMiddleware, userController.getUserDetails);
 app.get('/super-admin/company/:id/full', authMiddleware, companyController.getCompanyFullDetails);
+app.post('/super-admin/telegram-config', authMiddleware, userController.updateTelegramConfig);
 
 app.use('/chat', chatRoutes);
 

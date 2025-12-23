@@ -8,6 +8,7 @@ import { exportToGoogleSheet } from '../utils/googleSheetExport';
 const prisma = new PrismaClient();
 
 import { getTelegramChatId } from '../utils/telegramExport';
+import { sysBot } from '../services/sysBot';
 
 export const getTelegramId = async (req: Request, res: Response) => {
     try {
@@ -26,34 +27,6 @@ export const getTelegramId = async (req: Request, res: Response) => {
     }
 };
 
-export const createCompany = async (req: Request, res: Response) => {
-    try {
-        const { name, systemPrompt, greetingMessage } = req.body;
-        const userId = (req as any).user.userId;
-        console.log("Creating company for user:", userId, "Data:", { name, systemPrompt, greetingMessage });
-
-        const apiKey = uuidv4();
-        const company = await prisma.company.create({
-            data: {
-                name,
-                systemPrompt,
-                greetingMessage,
-                userId,
-                vectorNamespace: uuidv4(),
-                apiKeys: { create: { key: apiKey } }
-            },
-            include: { apiKeys: true }
-        });
-
-        res.status(201).json(company);
-    } catch (error: any) {
-        console.error("Error creating company:", error);
-        if (error.code === 'P2003') {
-            return res.status(401).json({ error: 'User not found. Please log out and log in again.' });
-        }
-        res.status(500).json({ error: 'Failed to create company' });
-    }
-};
 
 export const updateCompany = async (req: Request, res: Response) => {
     try {
@@ -85,6 +58,43 @@ export const updateCompany = async (req: Request, res: Response) => {
     }
 };
 
+
+
+export const createCompany = async (req: Request, res: Response) => {
+    try {
+        let { name, userId } = req.body;
+
+        // Fallback to authenticated user ID
+        if (!userId && (req as any).user) {
+            userId = (req as any).user.userId;
+        }
+
+        console.log("createCompany CALLED", { name, userId });
+
+        if (!name || !userId) {
+            console.error("Missing name or userId");
+            res.status(400).json({ error: 'Company name and user ID are required' });
+            return;
+        }
+
+        const company = await prisma.company.create({
+            data: {
+                name,
+                userId,
+                vectorNamespace: uuidv4(),
+                status: 'PENDING'
+            }
+        });
+
+        // Notify Super Admin
+        sysBot.notifyNewAssistant(company).catch(err => console.error("Failed to notify admin", err));
+
+        res.status(201).json(company);
+    } catch (error) {
+        console.error('Error creating company:', error);
+        res.status(500).json({ error: 'Failed to create company' });
+    }
+};
 export const createLead = async (req: Request, res: Response) => {
     try {
         const { companyId, name, email, phone } = req.body;

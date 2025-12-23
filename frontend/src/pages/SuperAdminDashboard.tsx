@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
+import {
+    Users, DollarSign, Activity, FileText, Settings, LogOut,
+    BarChart3, PieChart, TrendingUp, MessageSquare, ArrowUpRight, MessageCircle
+} from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
 import { API_URL } from "../config";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +14,9 @@ interface DashboardData {
     stats: {
         assistants: { total: number; active: number };
         revenue: string;
-        calls: number;
+        messages: number; // Changed from calls
         conversions: number;
+        conversations: number; // Added new property
     };
     weeklyActivity: { day: string; calls: number }[];
     topAssistants: {
@@ -93,7 +98,7 @@ export const SuperAdminDashboard = () => {
                                 Revenue: AED {data.stats.revenue}
                             </span>
                             <span className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700 text-yellow-500">
-                                Calls (Month): {data.stats.calls}
+                                Msgs (Month): {data.stats.messages}
                             </span>
                         </div>
                     </div>
@@ -125,16 +130,16 @@ export const SuperAdminDashboard = () => {
                     </Card>
                     <Card className="bg-slate-900 border-slate-800">
                         <CardContent className="p-6">
-                            <h3 className="text-slate-400 text-sm font-medium mb-2">Calls (This Month)</h3>
-                            <div className="text-4xl font-bold text-white mb-1">{data.stats.calls}</div>
-                            <p className="text-slate-500 text-xs">Avg duration N/A</p>
+                            <h3 className="text-slate-400 text-sm font-medium mb-2">Messages (This Month)</h3>
+                            <div className="text-4xl font-bold text-white mb-1">{data.stats.messages}</div>
+                            <p className="text-slate-500 text-xs">Total messages sent</p>
                         </CardContent>
                     </Card>
                     <Card className="bg-slate-900 border-slate-800">
                         <CardContent className="p-6">
-                            <h3 className="text-slate-400 text-sm font-medium mb-2">Conversions</h3>
-                            <div className="text-4xl font-bold text-white mb-1">{data.stats.conversions}</div>
-                            <p className="text-slate-500 text-xs">{data.stats.conversions} leads this month</p>
+                            <h3 className="text-slate-400 text-sm font-medium mb-2">Engagement</h3>
+                            <div className="text-4xl font-bold text-white mb-1">{data.stats.conversations}</div>
+                            <p className="text-slate-500 text-xs">{data.stats.conversions} leads generated</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -189,7 +194,7 @@ export const SuperAdminDashboard = () => {
                         </div>
                     </Card>
                     <Card className="bg-slate-900 border-slate-800 p-6">
-                        <h3 className="text-slate-400 text-sm font-medium mb-6">Calls This Week</h3>
+                        <h3 className="text-slate-400 text-sm font-medium mb-6">Messages This Week</h3>
                         <div className="h-64">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={data.weeklyActivity}>
@@ -212,16 +217,39 @@ export const SuperAdminDashboard = () => {
                 <Card className="bg-slate-900 border-slate-800 p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-white text-lg font-bold">Assistant Activity</h3>
-                        <Button variant="outline" className="border-yellow-600 text-yellow-500 hover:bg-yellow-900/20 text-xs h-8" onClick={() => navigate('/super-admin/users')}>
-                            Manage Assistants
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                className="border-blue-600 text-blue-500 hover:bg-blue-900/20 text-xs h-8"
+                                onClick={async () => {
+                                    const token = prompt("Enter your Telegram Bot Token:");
+                                    if (token) {
+                                        try {
+                                            const jwt = localStorage.getItem("token");
+                                            const res = await axios.post(`${API_URL}/super-admin/telegram-config`, { token }, {
+                                                headers: { Authorization: `Bearer ${jwt}` }
+                                            });
+                                            alert(res.data.message);
+                                        } catch (e: any) {
+                                            alert("Failed: " + (e.response?.data?.error || e.message));
+                                        }
+                                    }
+                                }}
+                            >
+                                <MessageCircle className="w-4 h-4 mr-1" />
+                                Connect Bot
+                            </Button>
+                            <Button variant="outline" className="border-yellow-600 text-yellow-500 hover:bg-yellow-900/20 text-xs h-8" onClick={() => navigate('/super-admin/users')}>
+                                Manage Assistants
+                            </Button>
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left text-slate-300">
                             <thead className="text-xs text-slate-500 uppercase border-b border-slate-800">
                                 <tr>
                                     <th className="px-4 py-3">Assistant</th>
-                                    <th className="px-4 py-3">Calls (Total)</th>
+                                    <th className="px-4 py-3">Messages (Total)</th>
                                     <th className="px-4 py-3">New Leads</th>
                                     <th className="px-4 py-3">Status</th>
                                     <th className="px-4 py-3">Last Updated</th>

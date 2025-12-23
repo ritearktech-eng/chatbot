@@ -23,6 +23,8 @@ model User {
   role      String   @default("USER") // SUPER_ADMIN, USER
   phone     String?
   referralSource String?
+  telegramBotToken String? // For Super Admin notifications
+  telegramChatId   String?
 }
 
 model Company {

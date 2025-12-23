@@ -31,14 +31,18 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             where: { createdAt: { gte: startOfMonth } }
         });
 
-        // 3. Calls (Approximated by UsageLogs count for now, or just total messageCount delta if we tracked it)
-        // We will use UsageLogs to approximate "activity" this month.
+        // 3. Messages (Approximated by UsageLogs count)
         const usageLogsThisMonth = await prisma.usageLog.findMany({
             where: { timestamp: { gte: startOfMonth } },
             select: { tokens: true }
         });
-        const callsThisMonth = usageLogsThisMonth.length;
+        const messagesThisMonth = usageLogsThisMonth.length;
         const totalTokensThisMonth = usageLogsThisMonth.reduce((acc, log) => acc + log.tokens, 0);
+
+        // 3.5 Conversations (Unique sessions)
+        const conversationsThisMonth = await prisma.conversation.count({
+            where: { createdAt: { gte: startOfMonth } }
+        });
 
         // 4. Revenue (Dummy/Calculated)
         // Assumption: $29/mo base per active bot + $0.00002 per token
@@ -72,9 +76,14 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         );
 
         // 6. Top Assistants
+        // 6. Top Assistants (Prioritize PENDING, then by Recent Update)
         const topCompanies = await prisma.company.findMany({
-            orderBy: { messageCount: 'desc' },
-            take: 5,
+            orderBy: [
+                { status: 'asc' }, // PENDING comes after ACTIVE alphabetically, but we want PENDING to be visible.
+                // Actually, let's just sort by updatedAt desc to show LATEST ones regardless of status
+                { updatedAt: 'desc' }
+            ],
+            take: 10, // Increased to show more
             select: {
                 id: true,
                 name: true,
@@ -85,12 +94,22 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             }
         });
 
+        // Custom sort via JS if we really want PENDING at the top always
+        topCompanies.sort((a, b) => {
+            // If one is PENDING and other isn't, PENDING first
+            if (a.status === 'PENDING' && b.status !== 'PENDING') return -1;
+            if (a.status !== 'PENDING' && b.status === 'PENDING') return 1;
+            // Otherwise sort by date
+            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        });
+
         res.json({
             stats: {
                 assistants: { total: totalCompanies, active: activeBots },
                 revenue: totalRevenue.toFixed(2),
-                calls: callsThisMonth,
-                conversions: leadsThisMonth
+                messages: messagesThisMonth,
+                conversions: leadsThisMonth,
+                conversations: conversationsThisMonth
             },
             weeklyActivity,
             topAssistants: topCompanies.map(c => ({
